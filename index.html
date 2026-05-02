@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>waythewear — Full-Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #070709;
+    --bg2: #0f0f14;
+    --bg3: #151520;
+    --purple: #7F77DD;
+    --teal: #1D9E75;
+    --amber: #EF9F27;
+    --pink: #D4537E;
+    --blue: #378ADD;
+    --text: #f0eefc;
+    --muted: #888799;
+    --border: rgba(127,119,221,0.2);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--purple);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.2s;
+    mix-blend-mode: screen;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 60px;
+    background: rgba(7,7,9,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px; font-weight: 700;
+    color: var(--purple);
+    letter-spacing: 2px;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--teal); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--muted); text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 0 60px;
+    position: relative; overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(127,119,221,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(127,119,221,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(127,119,221,0.12) 0%, transparent 70%);
+    top: 10%; left: -10%;
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(29,158,117,0.08) 0%, transparent 70%);
+    bottom: 10%; right: 5%;
+    pointer-events: none;
+  }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 4px;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-name {
+    font-size: clamp(52px, 9vw, 110px);
+    font-weight: 800; line-height: 0.9;
+    letter-spacing: -3px;
+    margin-bottom: 24px;
+    opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-name .accent { color: var(--purple); }
+  .hero-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px; color: var(--muted);
+    max-width: 480px; line-height: 1.8;
+    margin-bottom: 48px;
+    opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-buttons {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .btn {
+    padding: 14px 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase; text-decoration: none;
+    border: 1px solid; border-radius: 4px;
+    cursor: pointer; transition: all 0.25s;
+    display: inline-block;
+  }
+  .btn-primary {
+    background: var(--purple); color: #fff;
+    border-color: var(--purple);
+  }
+  .btn-primary:hover { background: transparent; color: var(--purple); }
+  .btn-tg {
+    background: transparent; color: var(--teal);
+    border-color: var(--teal);
+  }
+  .btn-tg:hover { background: var(--teal); color: #000; }
+  .btn-tg::before { content: '✈ '; }
+
+  /* STATS ROW */
+  .stats {
+    display: flex; gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 80px 0 0;
+    opacity: 0; animation: fadeUp 0.8s 1s forwards;
+    position: relative; z-index: 1;
+  }
+  .stat {
+    flex: 1; padding: 28px 40px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-size: 42px; font-weight: 800;
+    color: var(--purple); letter-spacing: -2px;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* SECTION COMMON */
+  section { padding: 100px 60px; position: relative; z-index: 1; }
+  .section-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--purple); text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-tag::before {
+    content: '';
+    width: 30px; height: 1px; background: var(--purple);
+  }
+  .section-title {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800; line-height: 1;
+    letter-spacing: -2px; margin-bottom: 60px;
+  }
+
+  /* SKILLS */
+  .skills-section { background: var(--bg2); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .skill-chip {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 1px;
+    background: var(--bg3);
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .skill-chip:hover {
+    border-color: var(--purple);
+    color: var(--purple);
+    background: rgba(127,119,221,0.06);
+    transform: translateY(-2px);
+  }
+  .skill-chip.featured {
+    border-color: rgba(127,119,221,0.4);
+    color: var(--purple);
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+  .project-card {
+    background: var(--bg2);
+    padding: 40px;
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .project-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent, var(--purple));
+    transition: height 0.3s;
+  }
+  .project-card:hover::before { height: 100%; }
+  .project-card:hover { background: var(--bg3); transform: translateY(-4px); }
+  .project-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 2px; margin-bottom: 20px;
+  }
+  .project-title {
+    font-size: 22px; font-weight: 800;
+    margin-bottom: 12px; letter-spacing: -0.5px;
+  }
+  .project-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    line-height: 1.8; margin-bottom: 24px;
+  }
+  .project-stack {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 24px;
+  }
+  .stack-tag {
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .project-links { display: flex; gap: 16px; }
+  .project-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--purple);
+    text-decoration: none; letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+  .project-link:hover { color: var(--teal); }
+  .project-card.span2 { grid-column: span 2; }
+
+  /* REVIEWS */
+  .reviews-section { background: var(--bg2); }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .review-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .review-card:hover { border-color: rgba(127,119,221,0.4); }
+  .review-stars {
+    color: var(--amber);
+    font-size: 14px; margin-bottom: 16px;
+    letter-spacing: 2px;
+  }
+  .review-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: #c0bddc;
+    line-height: 1.9; margin-bottom: 24px;
+  }
+  .review-author { display: flex; align-items: center; gap: 12px; }
+  .review-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .review-name { font-size: 14px; font-weight: 600; }
+  .review-role {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--muted); letter-spacing: 1px;
+  }
+
+  /* CONTACT / TG */
+  .contact-section {
+    text-align: center;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    padding: 120px 60px;
+  }
+  .contact-section .section-tag { justify-content: center; }
+  .contact-section .section-tag::before { display: none; }
+  .contact-section .section-title { text-align: center; margin-bottom: 20px; }
+  .contact-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--muted);
+    max-width: 500px; margin: 0 auto 48px;
+    line-height: 1.8;
+  }
+
+  /* TG BIG BUTTON */
+  .tg-button {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 20px 56px;
+    background: var(--teal);
+    color: #000; font-weight: 700;
+    font-size: 16px; letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .tg-button::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.1);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .tg-button:hover::after { transform: scaleX(1); }
+  .tg-button:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(29,158,117,0.3); }
+  .tg-icon { font-size: 22px; }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 60px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--muted);
+  }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s, transform 0.7s;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 2px; }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 0 24px; }
+    section { padding: 60px 24px; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.span2 { grid-column: span 1; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    .stats { flex-direction: column; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">way<span>the</span>wear</a>
+  <ul class="nav-links">
+    <li><a href="#skills">Навыки</a></li>
+    <li><a href="#projects">Проекты</a></li>
+    <li><a href="#reviews">Отзывы</a></li>
+    <li><a href="#contact">Контакт</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:80px">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div style="position:relative;z-index:1;width:100%">
+    <div class="hero-tag">// доступен для новых проектов</div>
+    <h1 class="hero-name">
+      way<span class="accent">the</span><br>wear
+    </h1>
+    <p class="hero-sub">
+      Строю цифровые продукты с нуля — от архитектуры до пикселя.<br>
+      Full-stack разработчик, влюблённый в чистый код и быстрые решения.
+    </p>
+    <div class="hero-buttons">
+      <a href="#projects" class="btn btn-primary">Посмотреть работы</a>
+      <a href="https://t.me/waythewear" target="_blank" rel="noopener" class="btn btn-tg">Telegram</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">47+</div>
+        <div class="stat-label">Проектов</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3.5</div>
+        <div class="stat-label">Года опыта</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">99%</div>
+        <div class="stat-label">Довольных клиентов</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">12h</div>
+        <div class="stat-label">Среднее время ответа</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="section-tag">Технологии</div>
+  <h2 class="section-title reveal">Мой стек</h2>
+  <div class="skills-grid reveal">
+    <div class="skill-chip featured">React / Next.js</div>
+    <div class="skill-chip featured">TypeScript</div>
+    <div class="skill-chip featured">Node.js</div>
+    <div class="skill-chip featured">PostgreSQL</div>
+    <div class="skill-chip">Vue.js</div>
+    <div class="skill-chip">MongoDB</div>
+    <div class="skill-chip">Docker</div>
+    <div class="skill-chip">Redis</div>
+    <div class="skill-chip">GraphQL</div>
+    <div class="skill-chip">Prisma ORM</div>
+    <div class="skill-chip">Tailwind CSS</div>
+    <div class="skill-chip">AWS / S3</div>
+    <div class="skill-chip">Nginx</div>
+    <div class="skill-chip">Git / CI-CD</div>
+    <div class="skill-chip">WebSocket</div>
+    <div class="skill-chip">Figma</div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="padding:100px 60px">
+  <div class="section-tag">Портфолио</div>
+  <h2 class="section-title reveal">Выбранные работы</h2>
+  <div class="projects-grid">
+
+    <div class="project-card span2" style="--accent:#7F77DD" onclick="">
+      <div class="project-num">01 — Featured</div>
+      <div class="project-title">NexTrade — биржевой трекер</div>
+      <p class="project-desc">
+        Веб-платформа для отслеживания криптовалютного портфеля в реальном времени.
+        WebSocket-подключение к бирже, live-графики, уведомления по цене, история транзакций.
+        Более 2 000 активных пользователей в первые 2 месяца после запуска.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">React</span>
+        <span class="stack-tag">Node.js</span>
+        <span class="stack-tag">WebSocket</span>
+        <span class="stack-tag">PostgreSQL</span>
+        <span class="stack-tag">Redis</span>
+        <span class="stack-tag">Docker</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="#">→ Демо</a>
+        <a class="project-link" href="#">→ GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card" style="--accent:#1D9E75">
+      <div class="project-num">02</div>
+      <div class="project-title">ShopFlow CMS</div>
+      <p class="project-desc">
+        Headless CMS для интернет-магазинов с drag-and-drop конструктором страниц,
+        управлением товарами и встроенной аналитикой продаж.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Next.js</span>
+        <span class="stack-tag">Prisma</span>
+        <span class="stack-tag">MongoDB</span>
+        <span class="stack-tag">AWS S3</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="#">→ Демо</a>
+        <a class="project-link" href="#">→ GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card" style="--accent:#EF9F27">
+      <div class="project-num">03</div>
+      <div class="project-title">Pulse — CRM для агентств</div>
+      <p class="project-desc">
+        CRM-система для digital-агентств: канбан-доски, биллинг клиентов,
+        тайм-трекер, автоматические отчёты и интеграция с Telegram.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Vue.js</span>
+        <span class="stack-tag">GraphQL</span>
+        <span class="stack-tag">PostgreSQL</span>
+        <span class="stack-tag">Telegram API</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="#">→ Демо</a>
+        <a class="project-link" href="#">→ GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card" style="--accent:#D4537E">
+      <div class="project-num">04</div>
+      <div class="project-title">AuraAI — чат-бот конструктор</div>
+      <p class="project-desc">
+        No-code платформа для создания AI чат-ботов с визуальным редактором сценариев,
+        интеграцией GPT-4 и деплоем в один клик.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">React</span>
+        <span class="stack-tag">OpenAI API</span>
+        <span class="stack-tag">Node.js</span>
+        <span class="stack-tag">Redis</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="#">→ Демо</a>
+        <a class="project-link" href="#">→ GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card" style="--accent:#378ADD">
+      <div class="project-num">05</div>
+      <div class="project-title">VaultPass — менеджер паролей</div>
+      <p class="project-desc">
+        Безопасный менеджер паролей с E2E-шифрованием, браузерным расширением
+        и синхронизацией между устройствами через зашифрованный облачный бэкап.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">TypeScript</span>
+        <span class="stack-tag">AES-256</span>
+        <span class="stack-tag">Chrome Extension</span>
+        <span class="stack-tag">SQLite</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="#">→ Демо</a>
+        <a class="project-link" href="#">→ GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card" style="--accent:#5DCAA5">
+      <div class="project-num">06</div>
+      <div class="project-title">DevMetrics — дашборд команды</div>
+      <p class="project-desc">
+        Инструмент мониторинга продуктивности для разработчиков: GitHub метрики,
+        скорость PR-ревью, burndown-диаграммы спринтов и автоматические standup-отчёты.
+      </p>
+      <div class="project-stack">
+        <span class="stack-tag">Next.js</span>
+        <span class="stack-tag">GitHub API</span>
+        <span class="stack-tag">Recharts</span>
+        <span class="stack-tag">Postgres</span>
+      </div>
+      <div class="project-links">
+        <a class="project-link" href="#">→ Демо</a>
+        <a class="project-link" href="#">→ GitHub</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="section-tag">Отзывы</div>
+  <h2 class="section-title reveal">Говорят клиенты</h2>
+  <div class="reviews-grid">
+
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">
+        "Работали над NexTrade вместе — парень реально знает своё дело.
+        Сдал в срок, всё работает без нареканий. Код чистый, документация есть.
+        Однозначно буду обращаться снова."
+      </p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:rgba(127,119,221,0.15);color:#7F77DD">АМ</div>
+        <div>
+          <div class="review-name">Алексей Митрофанов</div>
+          <div class="review-role">CEO, CryptoVentures</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">
+        "Обращалась за разработкой CMS для нашего маркетплейса. Сделал быстро,
+        объяснил каждый шаг. Очень приятно работать — понимает задачи с полуслова
+        и предлагает крутые решения."
+      </p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:rgba(29,158,117,0.15);color:#1D9E75">ЕК</div>
+        <div>
+          <div class="review-name">Елена Карпова</div>
+          <div class="review-role">Product Manager, Shopify Agency</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">
+        "Делал нам чат-бота для поддержки — результат превзошёл ожидания.
+        Интеграция прошла гладко, бот реально экономит нам часы работы каждый день.
+        Профессионал высокого уровня."
+      </p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:rgba(239,159,39,0.15);color:#EF9F27">ДС</div>
+        <div>
+          <div class="review-name">Дмитрий Соловьёв</div>
+          <div class="review-role">CTO, TechStart</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">
+        "Помог запустить MVP за 3 недели. Работает ответственно, держит связь
+        в телеграме, предупреждает о любых нюансах заранее. Однозначный рекомендую."
+      </p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:rgba(212,83,126,0.15);color:#D4537E">МЛ</div>
+        <div>
+          <div class="review-name">Марина Лаврова</div>
+          <div class="review-role">Founder, LaunchPad Studio</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">
+        "Занимался оптимизацией нашего бэкенда — скорость API выросла в 4 раза.
+        Грамотно объяснил где были узкие места. Сразу видно опытного разработчика."
+      </p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:rgba(55,138,221,0.15);color:#378ADD">ИП</div>
+        <div>
+          <div class="review-name">Илья Пономарёв</div>
+          <div class="review-role">Lead Dev, DevOps Pro</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-card reveal">
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">
+        "Разрабатывал CRM под наши нужды. Всё сделал чётко, без лишних вопросов —
+        просто взял и сделал как надо. Особенно понравилась интеграция с Telegram,
+        очень удобно для команды."
+      </p>
+      <div class="review-author">
+        <div class="review-avatar" style="background:rgba(93,202,165,0.15);color:#5DCAA5">НВ</div>
+        <div>
+          <div class="review-name">Николай Власов</div>
+          <div class="review-role">COO, Digital Pulse Agency</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="section-tag">Контакт</div>
+  <h2 class="section-title reveal">Есть проект?<br>Давайте поговорим.</h2>
+  <p class="contact-sub reveal">
+    Пишите в телеграм — отвечаю быстро.<br>
+    Расскажите задачу и обсудим детали.
+  </p>
+  <div class="reveal">
+    <a class="tg-button" href="https://t.me/waythewear" target="_blank" rel="noopener">
+      <span class="tg-icon">✈</span>
+      Написать в Telegram
+    </a>
+  </div>
+  <div style="margin-top:60px;display:flex;justify-content:center;gap:40px;flex-wrap:wrap" class="reveal">
+    <div style="text-align:center">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Telegram</div>
+      <a href="https://t.me/waythewear" style="color:var(--teal);font-size:14px;font-family:'Space Mono',monospace;text-decoration:none">@waythewear</a>
+    </div>
+    <div style="text-align:center">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Статус</div>
+      <span style="color:var(--teal);font-size:14px;font-family:'Space Mono',monospace">● Доступен</span>
+    </div>
+    <div style="text-align:center">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Часовой пояс</div>
+      <span style="color:var(--muted);font-size:14px;font-family:'Space Mono',monospace">UTC+3</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">waythewear · full-stack developer</div>
+  <div class="footer-copy">© 2024 — все права защищены</div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
