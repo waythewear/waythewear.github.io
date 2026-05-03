@@ -5,1777 +5,2023 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>waythewear — Full-Stack Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --bg: #05060f;
-    --bg2: #0a0c1a;
-    --bg3: #10132a;
-    --purple: #7F77DD;
-    --teal: #1D9E75;
-    --amber: #EF9F27;
-    --pink: #D4537E;
-    --blue: #378ADD;
-    --discord: #5865F2;
-    --discord-hover: #4752C4;
-    --text: #f0eefc;
-    --muted: #888799;
-    --border: rgba(127,119,221,0.18);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    overflow-x: hidden;
-    cursor: crosshair;
-  }
+:root {
+  --bg: #060710;
+  --bg2: #0b0d1c;
+  --bg3: #111328;
+  --accent: #5865F2;
+  --accent2: #7C3AED;
+  --green: #10B981;
+  --amber: #F59E0B;
+  --pink: #EC4899;
+  --text: #EEF0FF;
+  --muted: #6B7280;
+  --border: rgba(88,101,242,0.15);
+  --glass: rgba(11,13,28,0.7);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+}
 
-  /* AURORA BACKGROUND */
-  .aurora-bg {
-    position: fixed; inset: 0; z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .aurora-bg::before {
-    content: '';
-    position: absolute;
-    width: 180vw; height: 180vh;
-    top: -40%; left: -40%;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(88,101,242,0.13) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 30% at 80% 70%, rgba(127,119,221,0.1) 0%, transparent 55%),
-      radial-gradient(ellipse 40% 50% at 60% 10%, rgba(29,158,117,0.07) 0%, transparent 50%),
-      radial-gradient(ellipse 70% 40% at 10% 80%, rgba(88,101,242,0.06) 0%, transparent 60%);
-    animation: auroraShift 18s ease-in-out infinite alternate;
-  }
-  @keyframes auroraShift {
-    0%   { transform: translate(0, 0) rotate(0deg) scale(1); }
-    33%  { transform: translate(3%, 2%) rotate(1deg) scale(1.03); }
-    66%  { transform: translate(-2%, 3%) rotate(-0.5deg) scale(0.98); }
-    100% { transform: translate(1%, -2%) rotate(0.8deg) scale(1.02); }
-  }
+/* ── CURSOR ── */
+#cur-dot{
+  width:8px;height:8px;
+  background:#fff;border-radius:50%;
+  position:fixed;top:0;left:0;
+  pointer-events:none;z-index:99999;
+  transform:translate(-50%,-50%);
+  transition:transform .08s,width .2s,height .2s,background .2s;
+  mix-blend-mode:difference;
+}
+#cur-ring{
+  width:36px;height:36px;
+  border:1px solid rgba(88,101,242,0.5);
+  border-radius:50%;
+  position:fixed;top:0;left:0;
+  pointer-events:none;z-index:99998;
+  transform:translate(-50%,-50%);
+  transition:transform .18s ease,width .3s,height .3s,border-color .3s;
+}
+body.hovering #cur-dot{width:16px;height:16px;background:var(--accent)}
+body.hovering #cur-ring{width:56px;height:56px;border-color:var(--accent);opacity:.6}
 
-  /* GRID OVERLAY */
-  .grid-overlay {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(88,101,242,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(88,101,242,0.035) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-  }
+/* ── CANVAS ── */
+#three-canvas{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  z-index:0;pointer-events:none;
+}
 
-  /* NOISE */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 0; opacity: 0.45;
-  }
+/* ── NOISE ── */
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:1;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity:.6;
+}
 
-  /* CURSOR */
-  .cursor {
-    width: 12px; height: 12px;
-    background: var(--discord);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s, background 0.2s;
-    mix-blend-mode: screen;
-  }
+/* ── TICKER ── */
+.ticker-wrap{
+  position:fixed;bottom:0;left:0;right:0;
+  z-index:50;overflow:hidden;
+  background:rgba(6,7,16,0.95);
+  border-top:1px solid var(--border);
+  padding:9px 0;
+}
+.ticker-inner{
+  display:flex;gap:0;
+  animation:tickerRun 40s linear infinite;
+  white-space:nowrap;
+}
+.ticker-item{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2.5px;
+  color:var(--muted);text-transform:uppercase;
+  padding:0 32px;
+}
+.ticker-item span{color:var(--accent);margin-right:12px}
+@keyframes tickerRun{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 60px;
-    background: rgba(5,6,15,0.82);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-logo {
-    font-family: 'Space Mono', monospace;
-    font-size: 15px; font-weight: 700;
-    color: var(--purple);
-    letter-spacing: 2px;
-    text-decoration: none;
-  }
-  .nav-logo span { color: var(--discord); }
-  .nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
-  .nav-links a {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; letter-spacing: 2px;
-    color: var(--muted); text-decoration: none;
-    text-transform: uppercase;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); }
-  .nav-discord-btn {
-    display: inline-flex; align-items: center; gap: 7px;
-    padding: 8px 18px;
-    background: var(--discord);
-    color: #fff !important;
-    border-radius: 6px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px !important;
-    letter-spacing: 1.5px;
-    text-decoration: none;
-    text-transform: uppercase;
-    transition: background 0.2s, transform 0.2s !important;
-    font-weight: 700;
-  }
-  .nav-discord-btn:hover {
-    background: var(--discord-hover) !important;
-    color: #fff !important;
-    transform: translateY(-1px);
-  }
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 64px;
+  background:rgba(6,7,16,0.7);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  transition:background .3s;
+}
+.nav-logo{
+  font-family:'Bebas Neue',cursive;
+  font-size:22px;letter-spacing:4px;
+  color:var(--text);text-decoration:none;
+}
+.nav-logo em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:40px;list-style:none;align-items:center}
+.nav-links a{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2.5px;
+  color:var(--muted);text-decoration:none;
+  text-transform:uppercase;
+  transition:color .2s;
+  position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;
+  width:0;height:1px;background:var(--accent);
+  transition:width .3s;
+}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 22px;
+  background:var(--accent);color:#fff;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;text-decoration:none;
+  border-radius:4px;font-weight:700;
+  transition:all .2s;
+  border:1px solid var(--accent);
+}
+.nav-cta:hover{background:transparent;color:var(--accent)}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: flex-start;
-    padding: 0 60px;
-    position: relative; overflow: hidden;
-  }
-  .hero-glow {
-    position: absolute;
-    width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(88,101,242,0.1) 0%, transparent 70%);
-    top: 5%; left: -15%;
-    pointer-events: none;
-  }
-  .hero-glow2 {
-    position: absolute;
-    width: 450px; height: 450px;
-    background: radial-gradient(circle, rgba(127,119,221,0.08) 0%, transparent 70%);
-    bottom: 10%; right: 5%;
-    pointer-events: none;
-  }
-  .hero-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; letter-spacing: 4px;
-    color: var(--discord);
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
-  }
-  .hero-name {
-    font-size: clamp(52px, 9vw, 110px);
-    font-weight: 800; line-height: 0.9;
-    letter-spacing: -3px;
-    margin-bottom: 24px;
-    opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
-  }
-  .hero-name .accent { color: var(--discord); }
-  .hero-sub {
-    font-family: 'Space Mono', monospace;
-    font-size: 14px; color: var(--muted);
-    max-width: 480px; line-height: 1.8;
-    margin-bottom: 48px;
-    opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
-  }
-  .hero-buttons {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
-  }
-  .btn {
-    padding: 14px 32px;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px; letter-spacing: 2px;
-    text-transform: uppercase; text-decoration: none;
-    border: 1px solid; border-radius: 4px;
-    cursor: pointer; transition: all 0.25s;
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .btn-primary {
-    background: var(--purple); color: #fff;
-    border-color: var(--purple);
-  }
-  .btn-primary:hover { background: transparent; color: var(--purple); }
-  .btn-tg {
-    background: transparent; color: var(--teal);
-    border-color: var(--teal);
-  }
-  .btn-tg:hover { background: var(--teal); color: #000; }
-  .btn-discord {
-    background: var(--discord); color: #fff;
-    border-color: var(--discord);
-  }
-  .btn-discord:hover { background: transparent; color: var(--discord); }
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 520px;
+  gap:0;
+  align-items:center;
+  padding:100px 64px 60px;
+  position:relative;z-index:2;
+}
+.hero-left{}
+.hero-eyebrow{
+  display:flex;align-items:center;gap:12px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:4px;
+  color:var(--green);text-transform:uppercase;
+  margin-bottom:24px;
+  opacity:0;animation:slideUp .8s .1s forwards;
+}
+.hero-eyebrow::before{
+  content:'';display:block;
+  width:24px;height:1px;background:var(--green);
+}
+.pulse{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s infinite;
+  flex-shrink:0;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}
+  50%{box-shadow:0 0 0 6px rgba(16,185,129,0)}
+}
+.hero-name{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(72px,11vw,140px);
+  line-height:.88;
+  letter-spacing:2px;
+  margin-bottom:28px;
+  opacity:0;animation:slideUp .8s .25s forwards;
+}
+.hero-name .line2{color:var(--accent);display:block}
+.hero-desc{
+  font-size:16px;line-height:1.75;
+  color:rgba(238,240,255,.65);
+  max-width:440px;margin-bottom:44px;
+  opacity:0;animation:slideUp .8s .4s forwards;
+}
+.hero-btns{
+  display:flex;gap:14px;flex-wrap:wrap;
+  opacity:0;animation:slideUp .8s .55s forwards;
+}
+.btn-mag{
+  position:relative;
+  padding:14px 34px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2.5px;
+  text-transform:uppercase;text-decoration:none;
+  border-radius:3px;cursor:pointer;
+  border:none;display:inline-flex;align-items:center;gap:9px;
+  transition:transform .2s;overflow:hidden;
+  font-weight:700;
+}
+.btn-mag::before{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.07);
+  transform:translateX(-100%);
+  transition:transform .4s;
+}
+.btn-mag:hover::before{transform:translateX(0)}
+.btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+.btn-primary:hover{background:transparent;color:var(--accent)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-tg{background:var(--green);color:#000;border:1px solid var(--green)}
+.btn-tg:hover{background:transparent;color:var(--green)}
 
-  /* STATS ROW */
-  .stats {
-    display: flex; gap: 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin: 80px 0 0;
-    opacity: 0; animation: fadeUp 0.8s 1s forwards;
-    position: relative; z-index: 1;
-  }
-  .stat {
-    flex: 1; padding: 28px 40px;
-    border-right: 1px solid var(--border);
-    text-align: center;
-  }
-  .stat:last-child { border-right: none; }
-  .stat-num {
-    font-size: 42px; font-weight: 800;
-    color: var(--discord); letter-spacing: -2px;
-  }
-  .stat-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    letter-spacing: 3px; text-transform: uppercase;
-    margin-top: 4px;
-  }
+/* ── HERO RIGHT — SVG CHARACTER ── */
+.hero-right{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;animation:slideIn .9s .6s forwards;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
 
-  /* SECTION COMMON */
-  section { padding: 100px 60px; position: relative; z-index: 1; }
-  .section-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; letter-spacing: 4px;
-    color: var(--discord); text-transform: uppercase;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .section-tag::before {
-    content: '';
-    width: 30px; height: 1px; background: var(--discord);
-  }
-  .section-title {
-    font-size: clamp(32px, 5vw, 56px);
-    font-weight: 800; line-height: 1;
-    letter-spacing: -2px; margin-bottom: 60px;
-  }
+.char-wrap{
+  position:relative;width:420px;height:500px;
+}
+/* Floating code snippets around character */
+.float-code{
+  position:absolute;
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:rgba(88,101,242,.7);
+  background:rgba(11,13,28,.9);
+  border:1px solid rgba(88,101,242,.25);
+  border-radius:6px;
+  padding:8px 12px;
+  pointer-events:none;
+  white-space:nowrap;
+  animation:floatCode 4s ease-in-out infinite;
+}
+.float-code:nth-child(2){animation-delay:-1.3s;top:10%;left:-10%}
+.float-code:nth-child(3){animation-delay:-2.6s;bottom:20%;right:-5%}
+.float-code:nth-child(4){animation-delay:-.7s;top:55%;left:-15%}
+@keyframes floatCode{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-10px) rotate(1deg)}
+}
 
-  /* SKILLS */
-  .skills-section { background: var(--bg2); }
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-  }
-  .skill-chip {
-    padding: 12px 16px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--muted);
-    letter-spacing: 1px;
-    background: var(--bg3);
-    transition: all 0.2s;
-    text-align: center;
-  }
-  .skill-chip:hover {
-    border-color: var(--discord);
-    color: var(--discord);
-    background: rgba(88,101,242,0.06);
-    transform: translateY(-2px);
-  }
-  .skill-chip.featured {
-    border-color: rgba(88,101,242,0.4);
-    color: var(--purple);
-  }
+/* ── STATS ── */
+.hero-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  position:relative;z-index:2;
+  opacity:0;animation:slideUp .8s .8s forwards;
+}
+.hero-stat{
+  padding:28px 32px;
+  border-right:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.hero-stat:last-child{border-right:none}
+.hero-stat:hover{background:rgba(88,101,242,.04)}
+.stat-val{
+  font-family:'Bebas Neue',cursive;
+  font-size:52px;letter-spacing:1px;
+  color:var(--accent);line-height:1;
+}
+.stat-lbl{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;
+  margin-top:6px;
+}
 
-  /* PROJECTS */
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2px;
-  }
-  .project-card {
-    background: var(--bg2);
-    padding: 40px;
-    border: 1px solid var(--border);
-    position: relative; overflow: hidden;
-    transition: all 0.3s;
-    cursor: pointer;
-  }
-  .project-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0;
-    width: 3px; height: 0;
-    background: var(--accent, var(--discord));
-    transition: height 0.3s;
-  }
-  .project-card:hover::before { height: 100%; }
-  .project-card:hover { background: var(--bg3); transform: translateY(-4px); }
-  .project-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-family: 'Space Mono', monospace;
-    font-size: 9px; letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-  .badge-discord {
-    background: rgba(88,101,242,0.15);
-    border: 1px solid rgba(88,101,242,0.4);
-    color: #a5acf7;
-  }
-  .badge-web {
-    background: rgba(29,158,117,0.12);
-    border: 1px solid rgba(29,158,117,0.35);
-    color: #5dcaa5;
-  }
-  .badge-tg {
-    background: rgba(55,138,221,0.12);
-    border: 1px solid rgba(55,138,221,0.35);
-    color: #7bbcee;
-  }
-  .badge-shop {
-    background: rgba(239,159,39,0.12);
-    border: 1px solid rgba(239,159,39,0.35);
-    color: #f0b95a;
-  }
-  /* RESULT BLOCK inside project card */
-  .project-result {
-    display: flex; align-items: flex-start; gap: 10px;
-    background: rgba(88,101,242,0.06);
-    border: 1px solid rgba(88,101,242,0.18);
-    border-left: 3px solid var(--accent, var(--discord));
-    border-radius: 6px;
-    padding: 12px 14px;
-    margin-bottom: 20px;
-  }
-  .result-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-  .result-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--text);
-    line-height: 1.6;
-  }
-  .result-text strong { color: var(--accent, var(--discord)); font-weight: 700; }
-  .project-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    letter-spacing: 2px; margin-bottom: 20px;
-  }
-  .project-title {
-    font-size: 22px; font-weight: 800;
-    margin-bottom: 12px; letter-spacing: -0.5px;
-  }
-  .project-desc {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px; color: var(--muted);
-    line-height: 1.8; margin-bottom: 24px;
-  }
-  .project-stack {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    margin-bottom: 24px;
-  }
-  .stack-tag {
-    padding: 4px 10px;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    letter-spacing: 1px;
-  }
-  .project-links { display: flex; gap: 16px; }
-  .project-link {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--discord);
-    text-decoration: none; letter-spacing: 1px;
-    transition: color 0.2s;
-  }
-  .project-link:hover { color: var(--teal); }
-  .project-card.span2 { grid-column: span 2; }
+/* ── SECTION COMMONS ── */
+section{padding:110px 64px;position:relative;z-index:2}
+.sec-tag{
+  display:flex;align-items:center;gap:12px;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:4px;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:18px;
+}
+.sec-tag::before{content:'';width:28px;height:1px;background:var(--accent)}
+.sec-title{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(42px,6vw,72px);
+  letter-spacing:1px;line-height:1;
+  margin-bottom:64px;
+}
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .7s,transform .7s;
+}
+.reveal.vis{opacity:1;transform:none}
 
-  /* REVIEWS */
-  .reviews-section { background: var(--bg2); }
-  .reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-  .review-card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 32px;
-    position: relative; overflow: hidden;
-    transition: border-color 0.3s;
-  }
-  .review-card:hover { border-color: rgba(88,101,242,0.4); }
-  .review-stars {
-    color: var(--amber);
-    font-size: 14px; margin-bottom: 16px;
-    letter-spacing: 2px;
-  }
-  .review-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px; color: #c0bddc;
-    line-height: 1.9; margin-bottom: 24px;
-  }
-  .review-author { display: flex; align-items: center; gap: 12px; }
-  .review-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 14px;
-    flex-shrink: 0;
-  }
-  .review-name { font-size: 14px; font-weight: 600; }
-  .review-role {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; color: var(--muted); letter-spacing: 1px;
-  }
+/* ── TECH STACK ── */
+.stack-section{background:var(--bg2)}
+.stack-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:10px;
+}
+.tech-chip{
+  padding:14px 16px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:var(--bg3);
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:1.5px;
+  color:var(--muted);text-align:center;
+  transition:all .25s;
+  position:relative;overflow:hidden;
+  cursor:default;
+}
+.tech-chip::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(88,101,242,.12),transparent);
+  transform:translateY(100%);
+  transition:transform .35s;
+}
+.tech-chip:hover::before{transform:none}
+.tech-chip:hover{
+  border-color:var(--accent);
+  color:var(--text);
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 8px 24px rgba(88,101,242,.15);
+}
+.tech-chip.hot{border-color:rgba(88,101,242,.35);color:var(--accent)}
 
-  /* CONTACT */
-  .contact-section {
-    text-align: center;
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-    padding: 120px 60px;
-  }
-  .contact-section .section-tag { justify-content: center; }
-  .contact-section .section-tag::before { display: none; }
-  .contact-section .section-title { text-align: center; margin-bottom: 20px; }
-  .contact-sub {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px; color: var(--muted);
-    max-width: 500px; margin: 0 auto 48px;
-    line-height: 1.8;
-  }
-  .contact-buttons {
-    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-    margin-bottom: 60px;
-  }
+/* ── PROJECTS ── */
+.proj-section{background:var(--bg)}
+.proj-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:2px;
+}
 
-  /* TG BIG BUTTON */
-  .tg-button {
-    display: inline-flex; align-items: center; gap: 14px;
-    padding: 20px 56px;
-    background: var(--teal);
-    color: #000; font-weight: 700;
-    font-size: 16px; letter-spacing: 2px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: all 0.25s;
-    position: relative; overflow: hidden;
-  }
-  .tg-button::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: rgba(255,255,255,0.1);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.3s;
-  }
-  .tg-button:hover::after { transform: scaleX(1); }
-  .tg-button:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(29,158,117,0.3); }
-  .tg-icon { font-size: 22px; }
+/* LIVE BROWSER MOCKUP */
+.proj-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  overflow:hidden;
+  position:relative;
+  transition:all .35s;
+  cursor:pointer;
+}
+.proj-card:hover{
+  border-color:rgba(88,101,242,.4);
+  transform:translateY(-4px);
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+.proj-card.featured{grid-column:span 2}
 
-  /* DISCORD BIG BUTTON */
-  .discord-button {
-    display: inline-flex; align-items: center; gap: 14px;
-    padding: 20px 56px;
-    background: var(--discord);
-    color: #fff; font-weight: 700;
-    font-size: 16px; letter-spacing: 2px;
-    text-transform: uppercase;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: all 0.25s;
-    position: relative; overflow: hidden;
-  }
-  .discord-button::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: rgba(255,255,255,0.08);
-    transform: scaleX(0); transform-origin: left;
-    transition: transform 0.3s;
-  }
-  .discord-button:hover::after { transform: scaleX(1); }
-  .discord-button:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(88,101,242,0.35); background: var(--discord-hover); }
-  .dc-icon { font-size: 22px; }
+/* Browser frame */
+.browser-frame{
+  background:#0d0f1f;
+  border-bottom:1px solid var(--border);
+  padding:10px 14px;
+  display:flex;align-items:center;gap:8px;
+}
+.b-dot{width:9px;height:9px;border-radius:50%}
+.b-dot.r{background:#FF5F57}
+.b-dot.y{background:#FFBD2E}
+.b-dot.g{background:#28C840}
+.b-url{
+  margin-left:8px;flex:1;
+  background:rgba(255,255,255,.05);
+  border-radius:3px;padding:4px 10px;
+  font-family:'Space Mono',monospace;
+  font-size:9px;color:var(--muted);
+  letter-spacing:1px;
+}
 
-  /* FOOTER */
-  footer {
-    padding: 40px 60px;
-    border-top: 1px solid var(--border);
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .footer-logo {
-    font-family: 'Space Mono', monospace;
-    font-size: 13px; color: var(--muted);
-  }
-  .footer-links {
-    display: flex; gap: 24px; align-items: center;
-  }
-  .footer-link {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--muted);
-    text-decoration: none; letter-spacing: 1px;
-    transition: color 0.2s;
-  }
-  .footer-link:hover { color: var(--discord); }
-  .footer-copy {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--muted);
-    letter-spacing: 1px;
-  }
+/* Animated screenshot area */
+.proj-screen{
+  height:200px;overflow:hidden;
+  position:relative;
+}
+.proj-card.featured .proj-screen{height:260px}
+.screen-inner{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  padding:20px;
+}
 
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .reveal {
-    opacity: 0; transform: translateY(30px);
-    transition: opacity 0.7s, transform 0.7s;
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
+/* NexTrade dashboard */
+.nt-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:14px;
+}
+.nt-title{font-family:'Space Mono',monospace;font-size:11px;color:var(--text);letter-spacing:1px}
+.nt-badge{
+  padding:3px 8px;border-radius:20px;
+  background:rgba(16,185,129,.15);
+  border:1px solid rgba(16,185,129,.3);
+  font-size:8px;font-family:'Space Mono',monospace;
+  color:var(--green);letter-spacing:1px;
+}
+.nt-chart{
+  display:flex;align-items:flex-end;gap:3px;
+  height:80px;flex:1;
+}
+.nt-bar{
+  flex:1;border-radius:2px 2px 0 0;
+  background:linear-gradient(to top,rgba(88,101,242,.3),rgba(88,101,242,.6));
+  animation:barGrow .8s ease forwards;
+  transform-origin:bottom;
+}
+@keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.nt-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;margin-top:12px;
+}
+.nt-stat{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:4px;padding:8px 10px;
+}
+.nt-stat-val{font-family:'Bebas Neue',cursive;font-size:18px;color:var(--green)}
+.nt-stat-lbl{font-family:'Space Mono',monospace;font-size:7px;color:var(--muted);letter-spacing:1px;margin-top:2px}
 
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--discord); border-radius: 2px; }
+/* GuardCore bot */
+.gc-log{display:flex;flex-direction:column;gap:6px;font-family:'Space Mono',monospace;font-size:9px}
+.gc-entry{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:3px;background:rgba(255,255,255,.03)}
+.gc-tag{padding:2px 6px;border-radius:2px;font-size:8px;letter-spacing:1px;flex-shrink:0}
+.gc-tag.ban{background:rgba(236,72,153,.15);color:var(--pink)}
+.gc-tag.warn{background:rgba(245,158,11,.15);color:var(--amber)}
+.gc-tag.ok{background:rgba(16,185,129,.15);color:var(--green)}
+.gc-user{color:var(--accent);margin-right:4px}
+.gc-msg{color:var(--muted)}
 
-  /* PARTICLES CANVAS */
-  #particles-canvas {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  }
+/* ShopFlow CMS */
+.sf-layout{display:grid;grid-template-columns:140px 1fr;gap:1px;height:100%}
+.sf-sidebar{background:rgba(255,255,255,.02);padding:12px;border-right:1px solid var(--border)}
+.sf-nav-item{
+  padding:7px 10px;border-radius:3px;
+  font-family:'Space Mono',monospace;font-size:8px;
+  color:var(--muted);letter-spacing:1px;cursor:default;
+  margin-bottom:2px;transition:all .2s;
+}
+.sf-nav-item.active{background:rgba(88,101,242,.15);color:var(--accent)}
+.sf-main{padding:14px}
+.sf-header{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:10px}
+.sf-products{display:flex;flex-direction:column;gap:6px}
+.sf-product{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:3px;
+}
+.sf-prod-img{width:28px;height:28px;border-radius:2px;background:linear-gradient(135deg,rgba(88,101,242,.3),rgba(124,58,237,.3));flex-shrink:0}
+.sf-prod-info{flex:1}
+.sf-prod-name{font-family:'Space Mono',monospace;font-size:9px;color:var(--text);margin-bottom:2px}
+.sf-prod-price{font-family:'Space Mono',monospace;font-size:8px;color:var(--green)}
+.sf-prod-status{padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);font-size:7px;font-family:'Space Mono',monospace;color:var(--green);letter-spacing:1px}
 
-  /* TERMINAL */
-  .terminal-wrap {
-    margin-top: 40px;
-    position: relative; z-index: 1;
-    opacity: 0; animation: fadeUp 0.8s 1.1s forwards;
-  }
-  .terminal {
-    background: rgba(10,12,26,0.85);
-    border: 1px solid rgba(88,101,242,0.3);
-    border-radius: 10px;
-    max-width: 560px;
-    overflow: hidden;
-    box-shadow: 0 0 40px rgba(88,101,242,0.12);
-    backdrop-filter: blur(8px);
-  }
-  .terminal-bar {
-    display: flex; align-items: center; gap: 7px;
-    padding: 11px 16px;
-    background: rgba(88,101,242,0.08);
-    border-bottom: 1px solid rgba(88,101,242,0.15);
-  }
-  .terminal-dot { width: 11px; height: 11px; border-radius: 50%; }
-  .terminal-dot.r { background: #ff5f57; }
-  .terminal-dot.y { background: #febc2e; }
-  .terminal-dot.g { background: #28c840; }
-  .terminal-title {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    letter-spacing: 1px; margin-left: 8px;
-  }
-  .terminal-body {
-    padding: 18px 20px;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px; line-height: 2;
-    min-height: 120px;
-  }
-  .t-line { display: flex; gap: 10px; }
-  .t-prompt { color: var(--discord); user-select: none; }
-  .t-cmd { color: var(--text); }
-  .t-out { color: var(--teal); padding-left: 22px; }
-  .t-out.err { color: #D4537E; }
-  .t-out.muted { color: var(--muted); }
-  .t-cursor {
-    display: inline-block;
-    width: 8px; height: 14px;
-    background: var(--discord);
-    animation: blink 1s step-end infinite;
-    vertical-align: middle;
-    margin-left: 2px;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+/* EcoVault bot */
+.ev-card{background:rgba(255,255,255,.03);border-radius:6px;border:1px solid var(--border);padding:12px;height:100%}
+.ev-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:2px;margin-bottom:10px}
+.ev-leaderboard{display:flex;flex-direction:column;gap:5px}
+.ev-user{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:3px;background:rgba(255,255,255,.02)}
+.ev-rank{font-family:'Bebas Neue',cursive;font-size:20px;color:var(--muted);width:18px;text-align:center}
+.ev-rank.gold{color:#FFD700}
+.ev-rank.silver{color:#C0C0C0}
+.ev-rank.bronze{color:#CD7F32}
+.ev-name{flex:1;font-family:'Space Mono',monospace;font-size:9px;color:var(--text)}
+.ev-coins{font-family:'Space Mono',monospace;font-size:9px;color:var(--amber)}
 
-  /* PROCESS SECTION */
-  .process-section { background: var(--bg2); }
-  .process-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0;
-    position: relative;
-    margin-bottom: 80px;
-  }
-  .process-grid::before {
-    content: '';
-    position: absolute;
-    top: 28px; left: 10%; right: 10%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--discord), var(--purple), transparent);
-  }
-  .process-step {
-    display: flex; flex-direction: column; align-items: center;
-    text-align: center; padding: 0 16px;
-    position: relative;
-  }
-  .process-num {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: var(--bg3);
-    border: 2px solid var(--discord);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Space Mono', monospace;
-    font-size: 16px; font-weight: 700;
-    color: var(--discord);
-    margin-bottom: 16px;
-    position: relative; z-index: 1;
-    transition: all 0.3s;
-  }
-  .process-step:hover .process-num {
-    background: var(--discord); color: #fff;
-    box-shadow: 0 0 24px rgba(88,101,242,0.5);
-  }
-  .process-label {
-    font-size: 13px; font-weight: 700;
-    margin-bottom: 8px; letter-spacing: -0.3px;
-  }
-  .process-desc {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    line-height: 1.7; letter-spacing: 0.3px;
-  }
+.proj-info{padding:28px 32px}
+.proj-num{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:10px}
+.proj-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;margin-bottom:10px}
+.proj-desc{font-size:13px;color:rgba(238,240,255,.6);line-height:1.75;margin-bottom:18px}
+.proj-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.proj-tag{
+  padding:4px 10px;border:1px solid var(--border);
+  border-radius:2px;font-family:'Space Mono',monospace;
+  font-size:9px;color:var(--muted);letter-spacing:1px;
+}
+.proj-links{display:flex;gap:18px}
+.proj-link{
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--accent);text-decoration:none;
+  letter-spacing:1px;transition:color .2s;
+}
+.proj-link:hover{color:var(--green)}
 
-  /* FAQ */
-  .faq-list { max-width: 760px; margin: 0 auto; }
-  .faq-item {
-    border-bottom: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .faq-q {
-    padding: 22px 0;
-    display: flex; justify-content: space-between; align-items: center;
-    cursor: pointer;
-    font-size: 16px; font-weight: 600;
-    transition: color 0.2s;
-    gap: 16px;
-    user-select: none;
-  }
-  .faq-q:hover { color: var(--discord); }
-  .faq-icon {
-    font-family: 'Space Mono', monospace;
-    font-size: 20px; color: var(--discord);
-    transition: transform 0.3s;
-    flex-shrink: 0; line-height: 1;
-  }
-  .faq-item.open .faq-icon { transform: rotate(45deg); }
-  .faq-a {
-    font-family: 'Space Mono', monospace;
-    font-size: 12px; color: var(--muted);
-    line-height: 1.9;
-    max-height: 0; overflow: hidden;
-    transition: max-height 0.4s ease, padding 0.3s;
-    padding: 0;
-  }
-  .faq-item.open .faq-a { max-height: 200px; padding-bottom: 20px; }
+/* RESULT BAR */
+.proj-result{
+  display:flex;align-items:flex-start;gap:10px;
+  background:rgba(88,101,242,.06);
+  border:1px solid rgba(88,101,242,.2);
+  border-left:3px solid var(--accent);
+  border-radius:4px;padding:10px 14px;
+  margin-bottom:14px;
+}
+.pr-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.pr-text{font-family:'Space Mono',monospace;font-size:10px;line-height:1.6;color:rgba(238,240,255,.8)}
+.pr-text strong{color:var(--green)}
 
-  /* CALCULATOR */
-  .calc-section { background: var(--bg); }
-  .calculator {
-    max-width: 700px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 0 60px rgba(88,101,242,0.08);
-  }
-  .calc-header {
-    padding: 28px 36px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-  }
-  .calc-header h3 {
-    font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
-    margin-bottom: 4px;
-  }
-  .calc-header p {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--muted);
-  }
-  .calc-body { padding: 32px 36px; }
-  .calc-row { margin-bottom: 28px; }
-  .calc-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; letter-spacing: 3px;
-    text-transform: uppercase; color: var(--muted);
-    margin-bottom: 12px; display: block;
-  }
-  .calc-options {
-    display: flex; flex-wrap: wrap; gap: 8px;
-  }
-  .calc-opt {
-    padding: 9px 18px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--muted);
-    cursor: pointer; transition: all 0.2s;
-    background: var(--bg3);
-    user-select: none;
-  }
-  .calc-opt:hover { border-color: var(--discord); color: var(--discord); }
-  .calc-opt.active {
-    border-color: var(--discord);
-    background: rgba(88,101,242,0.12);
-    color: var(--text);
-  }
-  .calc-result {
-    border-top: 1px solid var(--border);
-    padding: 28px 36px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 16px;
-  }
-  .calc-price-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    letter-spacing: 3px; text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .calc-price {
-    font-size: 36px; font-weight: 800;
-    color: var(--discord); letter-spacing: -2px;
-    transition: all 0.4s;
-  }
-  .calc-days {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px; color: var(--muted);
-    margin-top: 4px;
-  }
+/* ── SERVICES ── */
+.serv-section{background:var(--bg2)}
+.serv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px}
+.serv-card{
+  padding:44px 36px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.serv-card::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s;
+}
+.serv-card:hover::after{transform:scaleX(1)}
+.serv-card:hover{background:var(--bg3);transform:translateY(-2px)}
+.serv-icon{
+  width:50px;height:50px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(88,101,242,.1);
+  border:1px solid rgba(88,101,242,.25);
+  border-radius:8px;
+  margin-bottom:22px;
+  font-size:22px;
+  transition:all .3s;
+}
+.serv-card:hover .serv-icon{
+  background:rgba(88,101,242,.2);
+  transform:scale(1.08) rotate(-3deg);
+}
+.serv-name{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;margin-bottom:12px}
+.serv-desc{font-size:13px;color:var(--muted);line-height:1.7}
 
-  /* EASTER EGG */
-  #easter-egg {
-    position: fixed; inset: 0; z-index: 10000;
-    background: #000;
-    display: none;
-    align-items: center; justify-content: center;
-    flex-direction: column;
-  }
-  #easter-egg.active { display: flex; }
-  .egg-inner {
-    text-align: center;
-    font-family: 'Space Mono', monospace;
-  }
-  .egg-ascii {
-    color: var(--discord);
-    font-size: 13px; line-height: 1.4;
-    white-space: pre;
-    animation: glitch 2s infinite;
-    margin-bottom: 24px;
-  }
-  @keyframes glitch {
-    0%,90%,100% { text-shadow: none; transform: none; }
-    92% { text-shadow: -2px 0 #ff0080, 2px 0 #00ffff; transform: translate(-1px,0); }
-    94% { text-shadow: 2px 0 #ff0080, -2px 0 #00ffff; transform: translate(1px,0); }
-    96% { text-shadow: none; transform: translate(0,1px); }
-  }
-  .egg-text { color: var(--teal); font-size: 13px; margin-bottom: 8px; }
-  .egg-sub { color: var(--muted); font-size: 11px; margin-bottom: 32px; letter-spacing: 2px; }
-  .egg-close {
-    padding: 12px 32px;
-    border: 1px solid var(--discord);
-    color: var(--discord);
-    background: transparent;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px; letter-spacing: 2px;
-    cursor: pointer; border-radius: 4px;
-    text-transform: uppercase;
-    transition: all 0.2s;
-  }
-  .egg-close:hover { background: var(--discord); color: #fff; }
-  .konami-hint {
-    position: fixed; bottom: 20px; right: 24px;
-    font-family: 'Space Mono', monospace;
-    font-size: 9px; color: rgba(136,135,153,0.25);
-    letter-spacing: 1px; pointer-events: none; z-index: 50;
-  }
+/* ── PROCESS ── */
+.proc-section{background:var(--bg)}
+.proc-list{display:flex;flex-direction:column;gap:0}
+.proc-item{
+  display:grid;grid-template-columns:80px 1fr;gap:40px;
+  padding:36px 0;
+  border-bottom:1px solid var(--border);
+  align-items:start;
+  transition:padding .3s;
+}
+.proc-item:hover{padding-left:12px}
+.proc-n{
+  font-family:'Bebas Neue',cursive;
+  font-size:64px;color:rgba(88,101,242,.15);
+  line-height:1;padding-top:4px;
+  transition:color .3s;
+}
+.proc-item:hover .proc-n{color:rgba(88,101,242,.4)}
+.proc-name{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:1px;margin-bottom:10px}
+.proc-desc{font-size:14px;color:var(--muted);line-height:1.7;max-width:600px}
 
-  @media (max-width: 768px) {
-    nav { padding: 16px 24px; }
-    .nav-links { display: none; }
-    .hero { padding: 0 24px; }
-    section { padding: 60px 24px; }
-    .projects-grid { grid-template-columns: 1fr; }
-    .project-card.span2 { grid-column: span 1; }
-    .reviews-grid { grid-template-columns: 1fr; }
-    .stats { flex-direction: column; }
-    .stat { border-right: none; border-bottom: 1px solid var(--border); }
-    footer { flex-direction: column; gap: 12px; text-align: center; }
-    .contact-buttons { flex-direction: column; align-items: center; }
-    .tg-button, .discord-button { padding: 16px 36px; font-size: 13px; }
-    .process-grid { grid-template-columns: 1fr; gap: 32px; }
-    .process-grid::before { display: none; }
-    .calc-body, .calc-result, .calc-header { padding: 20px; }
-  }
+/* ── REVIEWS ── */
+.rev-section{background:var(--bg2)}
+.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rev-card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:8px;padding:32px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.rev-card:hover{
+  border-color:rgba(88,101,242,.3);
+  transform:translateY(-3px);
+  box-shadow:0 16px 48px rgba(0,0,0,.3);
+}
+.rev-card::before{
+  content:'"';
+  position:absolute;top:16px;right:20px;
+  font-family:'Bebas Neue',cursive;
+  font-size:96px;color:rgba(88,101,242,.06);
+  line-height:1;pointer-events:none;
+}
+.rev-stars{color:var(--amber);font-size:13px;letter-spacing:2px;margin-bottom:14px}
+.rev-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 8px;border-radius:20px;
+  background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);
+  font-family:'Space Mono',monospace;font-size:8px;
+  color:var(--green);letter-spacing:1px;
+  margin-bottom:14px;
+}
+.rev-check{color:var(--green)}
+.rev-text{
+  font-family:'Space Mono',monospace;
+  font-size:11px;color:rgba(238,240,255,.7);
+  line-height:1.9;margin-bottom:22px;
+}
+.rev-author{display:flex;align-items:center;gap:12px}
+.rev-ava{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;flex-shrink:0;
+  border:2px solid rgba(88,101,242,.25);
+}
+.rev-name{font-size:14px;font-weight:500;margin-bottom:2px}
+.rev-role{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px}
+.rev-flag{font-size:13px;margin-left:auto}
+
+/* ── FAQ ── */
+.faq-section{background:var(--bg)}
+.faq-list{max-width:760px}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 0;cursor:pointer;
+  font-size:16px;font-weight:500;
+  transition:color .2s;
+}
+.faq-q:hover{color:var(--accent)}
+.faq-arrow{
+  font-family:'Space Mono',monospace;
+  font-size:14px;color:var(--accent);
+  transition:transform .3s;flex-shrink:0;
+}
+.faq-item.open .faq-arrow{transform:rotate(45deg)}
+.faq-a{
+  font-family:'Space Mono',monospace;
+  font-size:12px;color:var(--muted);
+  line-height:1.9;
+  max-height:0;overflow:hidden;
+  transition:max-height .4s ease,padding .3s;
+}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:22px}
+
+/* ── CALCULATOR ── */
+.calc-section{background:var(--bg2)}
+.calculator{
+  max-width:680px;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;
+}
+.calc-top{
+  padding:28px 36px;border-bottom:1px solid var(--border);
+  background:var(--bg2);
+}
+.calc-top h3{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:1px;margin-bottom:4px}
+.calc-top p{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted)}
+.calc-body{padding:32px 36px}
+.calc-row{margin-bottom:26px}
+.calc-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:block}
+.calc-opts{display:flex;flex-wrap:wrap;gap:8px}
+.c-opt{
+  padding:9px 18px;border:1px solid var(--border);
+  border-radius:4px;font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--muted);cursor:pointer;
+  transition:all .2s;background:var(--bg2);user-select:none;
+}
+.c-opt:hover{border-color:var(--accent);color:var(--accent)}
+.c-opt.on{border-color:var(--accent);background:rgba(88,101,242,.12);color:var(--text)}
+.calc-result{
+  border-top:1px solid var(--border);
+  padding:28px 36px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+}
+.calc-price-wrap{}
+.calc-price-lbl{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+.calc-price{font-family:'Bebas Neue',cursive;font-size:52px;color:var(--accent);letter-spacing:-1px;transition:all .4s}
+.calc-days{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px}
+.calc-cta{margin-left:auto}
+
+/* ── CONTACT ── */
+.contact-section{
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  text-align:center;padding:130px 64px;
+}
+.contact-section .sec-tag{justify-content:center}
+.contact-section .sec-tag::before{display:none}
+.contact-section .sec-title{margin-bottom:18px}
+.contact-sub{
+  font-family:'Space Mono',monospace;
+  font-size:12px;color:var(--muted);
+  max-width:480px;margin:0 auto 52px;
+  line-height:1.9;
+}
+.contact-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:60px}
+
+/* CONTACT FORM */
+.contact-form-wrap{
+  max-width:560px;margin:0 auto;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
+.form-header{
+  padding:22px 32px;border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--muted);letter-spacing:2px;text-align:left;
+}
+.form-body{padding:28px 32px;text-align:left}
+.form-group{margin-bottom:18px}
+.form-label{
+  display:block;
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:2.5px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:8px;
+}
+.form-input,.form-textarea{
+  width:100%;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:12px 16px;
+  font-family:'Space Mono',monospace;
+  font-size:12px;color:var(--text);
+  outline:none;
+  transition:border-color .2s;
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-textarea{height:100px;resize:vertical}
+.form-submit{
+  width:100%;padding:14px;
+  background:var(--accent);color:#fff;
+  border:none;border-radius:4px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;font-weight:700;
+  transition:all .2s;
+}
+.form-submit:hover{background:rgba(88,101,242,.8)}
+.tg-redirect{
+  display:none;
+  margin-top:16px;padding:16px;
+  background:rgba(16,185,129,.08);
+  border:1px solid rgba(16,185,129,.25);
+  border-radius:6px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--green);
+  line-height:1.7;text-align:center;
+}
+.tg-redirect a{color:var(--green);font-weight:700}
+
+/* Contact channels */
+.contact-channels{
+  display:flex;justify-content:center;gap:40px;flex-wrap:wrap;
+  margin-top:40px;
+}
+.ch-item{text-align:center}
+.ch-lbl{
+  font-family:'Space Mono',monospace;
+  font-size:9px;color:var(--muted);
+  letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;
+}
+.ch-val{
+  font-family:'Space Mono',monospace;
+  font-size:13px;color:var(--accent);
+  text-decoration:none;transition:color .2s;
+}
+.ch-val:hover{color:var(--green)}
+
+/* ── FOOTER ── */
+footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 64px;
+  border-top:1px solid var(--border);
+  position:relative;z-index:2;
+}
+.foot-logo{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;color:var(--muted)}
+.foot-links{display:flex;gap:24px}
+.foot-link{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:2px;
+  color:var(--muted);text-decoration:none;text-transform:uppercase;
+  transition:color .2s;
+}
+.foot-link:hover{color:var(--accent)}
+.foot-copy{font-family:'Space Mono',monospace;font-size:9px;color:rgba(107,114,128,.5);letter-spacing:2px}
+
+/* ── EASTER EGG ── */
+#egg{
+  position:fixed;inset:0;z-index:99999;
+  background:#000;
+  display:none;align-items:center;justify-content:center;flex-direction:column;
+}
+#egg.on{display:flex}
+.egg-ascii{
+  font-family:'Space Mono',monospace;
+  font-size:12px;line-height:1.4;
+  color:var(--accent);white-space:pre;
+  margin-bottom:20px;
+  animation:glitch 3s infinite;
+}
+@keyframes glitch{
+  0%,88%,100%{text-shadow:none;transform:none}
+  90%{text-shadow:-2px 0 #ff0080,2px 0 #00ffff;transform:translate(-1px,0)}
+  92%{text-shadow:2px 0 #ff0080,-2px 0 #00ffff;transform:translate(1px,0)}
+  94%{transform:none;text-shadow:0 0 8px var(--accent)}
+}
+.egg-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--green);margin-bottom:6px}
+.egg-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:28px}
+.egg-close{
+  padding:12px 32px;border:1px solid var(--accent);
+  color:var(--accent);background:transparent;
+  font-family:'Space Mono',monospace;font-size:11px;
+  letter-spacing:2px;cursor:pointer;border-radius:3px;
+  text-transform:uppercase;transition:all .2s;
+}
+.egg-close:hover{background:var(--accent);color:#fff}
+.konami-hint{
+  position:fixed;bottom:56px;right:20px;
+  font-family:'Space Mono',monospace;
+  font-size:8px;color:rgba(107,114,128,.15);
+  letter-spacing:1px;pointer-events:none;z-index:50;
+}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  nav{padding:16px 24px}
+  .nav-links{display:none}
+  .hero{grid-template-columns:1fr;padding:100px 24px 40px}
+  .hero-right{display:none}
+  section{padding:70px 24px}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .proj-grid{grid-template-columns:1fr}
+  .proj-card.featured{grid-column:span 1}
+  .serv-grid{grid-template-columns:1fr}
+  .rev-grid{grid-template-columns:1fr}
+  .proc-item{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:12px;text-align:center;padding:24px}
+  .contact-channels{gap:20px}
+}
 </style>
 </head>
 <body>
 
-<canvas id="particles-canvas"></canvas>
-<div class="aurora-bg"></div>
-<div class="grid-overlay"></div>
-<div class="cursor" id="cursor"></div>
+<!-- ── THREE.JS CANVAS ── -->
+<canvas id="three-canvas"></canvas>
 
-<!-- EASTER EGG -->
-<div id="easter-egg">
-  <div class="egg-inner">
-    <div class="egg-ascii">
+<!-- ── CURSORS ── -->
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
+<!-- ── EASTER EGG ── -->
+<div id="egg">
+  <div class="egg-ascii">
  ██╗    ██╗ █████╗ ██╗   ██╗
  ██║    ██║██╔══██╗╚██╗ ██╔╝
  ██║ █╗ ██║███████║ ╚████╔╝ 
  ██║███╗██║██╔══██║  ╚██╔╝  
  ╚███╔███╔╝██║  ██║   ██║   
-  ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   </div>
-    <div class="egg-text">// ты нашёл пасхалку, уважаю 👾</div>
-    <div class="egg-sub">↑ ↑ ↓ ↓ ← → ← → B A</div>
-    <button class="egg-close" onclick="closeEgg()">[ закрыть ]</button>
-  </div>
+  ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝  </div>
+  <div class="egg-text">// ты нашёл пасхалку. уважаю, боец.</div>
+  <div class="egg-sub">↑ ↑ ↓ ↓ ← → ← → B A</div>
+  <button class="egg-close" onclick="document.getElementById('egg').classList.remove('on')">[ закрыть ]</button>
 </div>
 <div class="konami-hint">↑↑↓↓←→←→BA</div>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">way<span>the</span>wear</a>
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker">
+    <span class="ticker-item"><span>01</span> React / Next.js</span>
+    <span class="ticker-item"><span>02</span> TypeScript</span>
+    <span class="ticker-item"><span>03</span> Node.js</span>
+    <span class="ticker-item"><span>04</span> PostgreSQL</span>
+    <span class="ticker-item"><span>05</span> Discord.js</span>
+    <span class="ticker-item"><span>06</span> Docker</span>
+    <span class="ticker-item"><span>07</span> Redis</span>
+    <span class="ticker-item"><span>08</span> GraphQL</span>
+    <span class="ticker-item"><span>09</span> AWS / S3</span>
+    <span class="ticker-item"><span>10</span> WebSocket</span>
+    <span class="ticker-item"><span>11</span> Prisma ORM</span>
+    <span class="ticker-item"><span>12</span> Tailwind CSS</span>
+    <span class="ticker-item"><span>01</span> React / Next.js</span>
+    <span class="ticker-item"><span>02</span> TypeScript</span>
+    <span class="ticker-item"><span>03</span> Node.js</span>
+    <span class="ticker-item"><span>04</span> PostgreSQL</span>
+    <span class="ticker-item"><span>05</span> Discord.js</span>
+    <span class="ticker-item"><span>06</span> Docker</span>
+    <span class="ticker-item"><span>07</span> Redis</span>
+    <span class="ticker-item"><span>08</span> GraphQL</span>
+    <span class="ticker-item"><span>09</span> AWS / S3</span>
+    <span class="ticker-item"><span>10</span> WebSocket</span>
+    <span class="ticker-item"><span>11</span> Prisma ORM</span>
+    <span class="ticker-item"><span>12</span> Tailwind CSS</span>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <a class="nav-logo" href="#">way<em>the</em>wear</a>
   <ul class="nav-links">
-    <li><a href="#skills">Навыки</a></li>
+    <li><a href="#stack">Стек</a></li>
     <li><a href="#projects">Проекты</a></li>
-    <li><a href="#process">Процесс</a></li>
-    <li><a href="#calculator">Цены</a></li>
+    <li><a href="#services">Услуги</a></li>
     <li><a href="#reviews">Отзывы</a></li>
+    <li><a href="#calculator">Цены</a></li>
     <li><a href="#contact">Контакт</a></li>
-    <li>
-      <a class="nav-discord-btn" href="https://discord.gg/hreWxk9u" target="_blank" rel="noopener">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-        Discord
-      </a>
-    </li>
+    <li><a class="nav-cta" href="https://t.me/waythewear" target="_blank">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Telegram
+    </a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
-<section class="hero" style="padding-top:80px">
-  <div class="hero-glow"></div>
-  <div class="hero-glow2"></div>
-  <div style="position:relative;z-index:1;width:100%">
-    <div class="hero-tag">// доступен для новых проектов</div>
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <div class="pulse"></div>
+      доступен для новых проектов
+    </div>
     <h1 class="hero-name">
-      way<span class="accent">the</span><br>wear
+      way<span style="color:var(--accent)">the</span>
+      <span class="line2">wear</span>
     </h1>
-    <p class="hero-sub">
+    <p class="hero-desc">
       Строю цифровые продукты с нуля — от архитектуры до пикселя.<br>
-      Full-stack разработчик, влюблённый в чистый код и быстрые решения.
+      Full-stack разработчик, специализирующийся на Discord-ботах, веб-платформах и масштабируемых API.
     </p>
-    <div class="hero-buttons">
-      <a href="#projects" class="btn btn-primary">Посмотреть работы</a>
-      <a href="https://t.me/waythewear" target="_blank" rel="noopener" class="btn btn-tg">
-        <span>✈</span> Telegram
+    <div class="hero-btns">
+      <a href="#projects" class="btn-mag btn-primary">Смотреть работы</a>
+      <a href="https://t.me/waythewear" target="_blank" class="btn-mag btn-tg">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Telegram
       </a>
-      <a href="https://discord.gg/hreWxk9u" target="_blank" rel="noopener" class="btn btn-discord">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-        Discord
-      </a>
+      <a href="#calculator" class="btn-mag btn-ghost">Рассчитать стоимость</a>
     </div>
+  </div>
 
-    <div class="terminal-wrap">
-      <div class="terminal">
-        <div class="terminal-bar">
-          <div class="terminal-dot r"></div>
-          <div class="terminal-dot y"></div>
-          <div class="terminal-dot g"></div>
-          <span class="terminal-title">waythewear@dev ~ zsh</span>
+  <!-- SVG Developer Character -->
+  <div class="hero-right">
+    <div class="char-wrap">
+      <!-- Floating code snippets -->
+      <div class="float-code">const dev = new waythewear()</div>
+      <div class="float-code">npm run build ✓</div>
+      <div class="float-code">git push origin main</div>
+      <div class="float-code">docker-compose up -d</div>
+
+      <!-- Big animated SVG developer character -->
+      <svg viewBox="0 0 400 480" width="400" height="480" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0">
+        <defs>
+          <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFD4A8"/>
+            <stop offset="100%" style="stop-color:#F4B97B"/>
+          </linearGradient>
+          <linearGradient id="shirtGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#1e2035"/>
+            <stop offset="100%" style="stop-color:#111328"/>
+          </linearGradient>
+          <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#060710"/>
+            <stop offset="100%" style="stop-color:#0b0d1c"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="softGlow">
+            <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Chair / shadow -->
+        <ellipse cx="200" cy="462" rx="110" ry="12" fill="rgba(0,0,0,0.3)"/>
+        <!-- Chair back -->
+        <rect x="155" y="320" width="90" height="130" rx="8" fill="#0d0f20"/>
+        <rect x="163" y="328" width="74" height="114" rx="6" fill="#111325"/>
+        <!-- Chair legs -->
+        <rect x="168" y="436" width="14" height="28" rx="3" fill="#0a0c18"/>
+        <rect x="218" y="436" width="14" height="28" rx="3" fill="#0a0c18"/>
+        <rect x="154" y="450" width="90" height="10" rx="3" fill="#0d0f20"/>
+
+        <!-- DESK -->
+        <rect x="60" y="310" width="280" height="14" rx="4" fill="#0d0f20"/>
+        <rect x="68" y="324" width="10" height="60" rx="3" fill="#0a0c18"/>
+        <rect x="322" y="324" width="10" height="60" rx="3" fill="#0a0c18"/>
+
+        <!-- MONITOR -->
+        <rect x="120" y="200" width="160" height="108" rx="6" fill="#070919" stroke="rgba(88,101,242,0.4)" stroke-width="1.5"/>
+        <rect x="126" y="206" width="148" height="96" rx="4" fill="url(#screenGrad)"/>
+        <!-- Monitor stand -->
+        <rect x="192" y="308" width="16" height="14" rx="2" fill="#0a0c18"/>
+        <rect x="174" y="318" width="52" height="6" rx="2" fill="#0a0c18"/>
+
+        <!-- Screen content — code editor -->
+        <rect x="130" y="210" width="140" height="88" rx="2" fill="#060710"/>
+        <!-- Editor tab bar -->
+        <rect x="130" y="210" width="140" height="12" rx="2" fill="#0d0f1f"/>
+        <rect x="134" y="213" width="30" height="6" rx="2" fill="rgba(88,101,242,0.3)"/>
+        <text x="136" y="218" font-size="4" fill="rgba(88,101,242,0.8)" font-family="monospace">index.ts</text>
+        <!-- Code lines -->
+        <g id="code-lines">
+          <rect x="134" y="226" width="60" height="2.5" rx="1" fill="rgba(88,101,242,0.5)"/>
+          <rect x="134" y="232" width="40" height="2.5" rx="1" fill="rgba(16,185,129,0.5)"/>
+          <rect x="142" y="238" width="75" height="2.5" rx="1" fill="rgba(238,240,255,0.25)"/>
+          <rect x="142" y="244" width="55" height="2.5" rx="1" fill="rgba(245,158,11,0.5)"/>
+          <rect x="134" y="250" width="30" height="2.5" rx="1" fill="rgba(88,101,242,0.5)"/>
+          <rect x="134" y="256" width="88" height="2.5" rx="1" fill="rgba(238,240,255,0.2)"/>
+          <rect x="142" y="262" width="48" height="2.5" rx="1" fill="rgba(16,185,129,0.4)"/>
+          <rect x="134" y="268" width="20" height="2.5" rx="1" fill="rgba(88,101,242,0.5)"/>
+          <!-- Cursor blink -->
+          <rect x="154" y="268" width="2" height="6" rx="0.5" fill="rgba(88,101,242,0.9)">
+            <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+          </rect>
+        </g>
+        <!-- Screen glow -->
+        <rect x="126" y="206" width="148" height="96" rx="4" fill="rgba(88,101,242,0.03)" filter="url(#softGlow)"/>
+
+        <!-- KEYBOARD -->
+        <rect x="128" y="314" width="144" height="10" rx="2" fill="#0d0f1f"/>
+        <rect x="132" y="316" width="136" height="6" rx="1" fill="#111325"/>
+        <!-- Key rows -->
+        <g fill="rgba(88,101,242,0.2)">
+          <rect x="134" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="144" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="154" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="164" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="174" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="184" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="194" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="204" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="214" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="224" y="317" width="8" height="4" rx="0.5"/>
+          <rect x="234" y="317" width="28" height="4" rx="0.5"/>
+        </g>
+
+        <!-- BODY / TORSO -->
+        <ellipse cx="200" cy="285" rx="50" ry="52" fill="url(#shirtGrad)"/>
+        <!-- Hoodie details -->
+        <path d="M168 258 Q200 270 232 258 L236 310 Q200 320 164 310 Z" fill="#111325"/>
+        <!-- Collar -->
+        <path d="M188 254 Q200 265 212 254 L215 258 Q200 272 185 258 Z" fill="#0d0f1f"/>
+        <!-- Logo on shirt -->
+        <text x="191" y="285" font-size="7" fill="rgba(88,101,242,0.6)" font-family="monospace" font-weight="bold">{"</text>
+        <text x="197" y="285" font-size="7" fill="rgba(16,185,129,0.6)" font-family="monospace" font-weight="bold">}</text>
+
+        <!-- ARMS -->
+        <!-- Left arm (typing) -->
+        <g id="arm-left">
+          <path d="M168 265 Q148 285 140 310 Q138 316 145 318 Q152 320 155 313 Q160 295 172 278 Z" fill="url(#skinGrad)"/>
+          <!-- Left hand -->
+          <ellipse cx="144" cy="318" rx="9" ry="7" fill="url(#skinGrad)"/>
+          <!-- Fingers -->
+          <rect x="137" y="310" width="4" height="8" rx="2" fill="url(#skinGrad)"/>
+          <rect x="142" y="308" width="4" height="10" rx="2" fill="url(#skinGrad)"/>
+          <rect x="148" y="309" width="4" height="9" rx="2" fill="url(#skinGrad)">
+            <animateTransform attributeName="transform" type="translate" values="0,0;0,-2;0,0" dur=".3s" repeatCount="indefinite"/>
+          </rect>
+          <rect x="153" y="311" width="4" height="7" rx="2" fill="url(#skinGrad)"/>
+        </g>
+        <!-- Right arm (typing) -->
+        <g id="arm-right">
+          <path d="M232 265 Q252 285 260 310 Q262 316 255 318 Q248 320 245 313 Q240 295 228 278 Z" fill="url(#skinGrad)"/>
+          <!-- Right hand -->
+          <ellipse cx="256" cy="318" rx="9" ry="7" fill="url(#skinGrad)"/>
+          <!-- Fingers -->
+          <rect x="247" y="310" width="4" height="8" rx="2" fill="url(#skinGrad)"/>
+          <rect x="252" y="308" width="4" height="10" rx="2" fill="url(#skinGrad)">
+            <animateTransform attributeName="transform" type="translate" values="0,0;0,-2;0,0" dur=".4s" repeatCount="indefinite"/>
+          </rect>
+          <rect x="258" y="309" width="4" height="9" rx="2" fill="url(#skinGrad)"/>
+          <rect x="263" y="311" width="4" height="7" rx="2" fill="url(#skinGrad)"/>
+        </g>
+
+        <!-- NECK -->
+        <rect x="192" y="235" width="16" height="22" rx="6" fill="url(#skinGrad)"/>
+
+        <!-- HEAD -->
+        <g id="head">
+          <animateTransform attributeName="transform" type="translate" values="0,0;0,-3;0,0" dur="4s" repeatCount="indefinite" additive="sum"/>
+          <!-- Head shape -->
+          <ellipse cx="200" cy="195" rx="42" ry="46" fill="url(#skinGrad)"/>
+          <!-- Hair -->
+          <path d="M160 185 Q165 150 200 148 Q235 150 240 185 Q236 165 200 163 Q164 165 160 185 Z" fill="#1a1a2e"/>
+          <path d="M160 185 Q156 175 162 165 Q164 160 168 162 Q162 170 165 182 Z" fill="#1a1a2e"/>
+          <path d="M240 185 Q244 175 238 165 Q236 160 232 162 Q238 170 235 182 Z" fill="#1a1a2e"/>
+          <!-- Hair detail / fade -->
+          <path d="M166 170 Q172 155 200 153 Q228 155 234 170 Q220 162 200 161 Q180 162 166 170Z" fill="#22223b"/>
+
+          <!-- GLASSES -->
+          <rect x="173" y="191" width="22" height="14" rx="4" fill="none" stroke="rgba(88,101,242,0.8)" stroke-width="1.5"/>
+          <rect x="205" y="191" width="22" height="14" rx="4" fill="none" stroke="rgba(88,101,242,0.8)" stroke-width="1.5"/>
+          <line x1="195" y1="197" x2="205" y2="197" stroke="rgba(88,101,242,0.8)" stroke-width="1.5"/>
+          <line x1="163" y1="197" x2="173" y2="197" stroke="rgba(88,101,242,0.5)" stroke-width="1.5"/>
+          <line x1="227" y1="197" x2="237" y2="197" stroke="rgba(88,101,242,0.5)" stroke-width="1.5"/>
+          <!-- Lens tint -->
+          <rect x="174" y="192" width="20" height="12" rx="3" fill="rgba(88,101,242,0.08)"/>
+          <rect x="206" y="192" width="20" height="12" rx="3" fill="rgba(88,101,242,0.08)"/>
+          <!-- Glasses glow -->
+          <rect x="173" y="191" width="22" height="14" rx="4" fill="none" stroke="rgba(88,101,242,0.3)" stroke-width="3" filter="url(#glow)"/>
+          <rect x="205" y="191" width="22" height="14" rx="4" fill="none" stroke="rgba(88,101,242,0.3)" stroke-width="3" filter="url(#glow)"/>
+
+          <!-- Eyes (blinking) -->
+          <ellipse cx="184" cy="197" rx="5" ry="5" fill="#1a1a2e"/>
+          <ellipse cx="216" cy="197" rx="5" ry="5" fill="#1a1a2e"/>
+          <!-- Eye whites -->
+          <ellipse cx="186" cy="196" rx="2" ry="2" fill="#fff"/>
+          <ellipse cx="218" cy="196" rx="2" ry="2" fill="#fff"/>
+          <!-- Blink -->
+          <rect x="179" y="194" width="10" height="6" rx="3" fill="url(#skinGrad)">
+            <animate attributeName="height" values="0;6;0" dur="4s" repeatCount="indefinite" keyTimes="0;0.04;0.08"/>
+            <animate attributeName="y" values="197;194;197" dur="4s" repeatCount="indefinite" keyTimes="0;0.04;0.08"/>
+          </rect>
+          <rect x="211" y="194" width="10" height="6" rx="3" fill="url(#skinGrad)">
+            <animate attributeName="height" values="0;6;0" dur="4s" repeatCount="indefinite" keyTimes="0;0.04;0.08"/>
+            <animate attributeName="y" values="197;194;197" dur="4s" repeatCount="indefinite" keyTimes="0;0.04;0.08"/>
+          </rect>
+
+          <!-- Smile / mouth -->
+          <path d="M192 212 Q200 218 208 212" stroke="#c9755a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <!-- Nose -->
+          <path d="M198 203 Q196 208 200 210 Q204 208 202 203" stroke="rgba(180,120,80,0.5)" stroke-width="1" fill="none"/>
+
+          <!-- Ear buds / headphone hint -->
+          <circle cx="158" cy="195" r="5" fill="#0d0f1f" stroke="rgba(88,101,242,0.4)" stroke-width="1"/>
+          <circle cx="242" cy="195" r="5" fill="#0d0f1f" stroke="rgba(88,101,242,0.4)" stroke-width="1"/>
+          <circle cx="158" cy="195" r="2" fill="rgba(88,101,242,0.6)"/>
+          <circle cx="242" cy="195" r="2" fill="rgba(88,101,242,0.6)"/>
+        </g>
+
+        <!-- Screen glow effect on face -->
+        <ellipse cx="200" cy="210" rx="60" ry="40" fill="rgba(88,101,242,0.04)" filter="url(#softGlow)"/>
+
+        <!-- Mug -->
+        <rect x="88" y="298" width="28" height="22" rx="4" fill="#0d0f1f" stroke="rgba(88,101,242,0.3)" stroke-width="1"/>
+        <path d="M116 305 Q126 305 126 311 Q126 317 116 317" fill="none" stroke="rgba(88,101,242,0.3)" stroke-width="1.5"/>
+        <text x="93" y="313" font-size="8" fill="rgba(88,101,242,0.7)" font-family="monospace">{"}</text>
+        <!-- Steam -->
+        <path d="M96 296 Q98 291 96 286" fill="none" stroke="rgba(238,240,255,0.15)" stroke-width="1.5" stroke-linecap="round">
+          <animate attributeName="opacity" values="0.15;0.4;0.15" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <path d="M102 294 Q104 289 102 283" fill="none" stroke="rgba(238,240,255,0.1)" stroke-width="1.5" stroke-linecap="round">
+          <animate attributeName="opacity" values="0.1;0.35;0.1" dur="2.5s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- Ambient glow behind character -->
+        <ellipse cx="200" cy="300" rx="80" ry="30" fill="rgba(88,101,242,0.05)" filter="url(#softGlow)"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="hero-stats" id="stats-row">
+  <div class="hero-stat">
+    <div class="stat-val" data-target="47">0</div>
+    <div class="stat-lbl">Проектов сдано</div>
+  </div>
+  <div class="hero-stat">
+    <div class="stat-val" data-target="3" data-suffix=".5+">0</div>
+    <div class="stat-lbl">Года опыта</div>
+  </div>
+  <div class="hero-stat">
+    <div class="stat-val" data-target="99" data-suffix="%">0</div>
+    <div class="stat-lbl">Довольных клиентов</div>
+  </div>
+  <div class="hero-stat">
+    <div class="stat-val" data-prefix="<" data-target="12" data-suffix="h">0</div>
+    <div class="stat-lbl">Время ответа</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ STACK ══════════════════════ -->
+<section class="stack-section" id="stack">
+  <div class="sec-tag">Технологии</div>
+  <h2 class="sec-title reveal">Мой стек</h2>
+  <div class="stack-grid reveal">
+    <div class="tech-chip hot">React / Next.js</div>
+    <div class="tech-chip hot">TypeScript</div>
+    <div class="tech-chip hot">Node.js</div>
+    <div class="tech-chip hot">PostgreSQL</div>
+    <div class="tech-chip hot">Discord.js</div>
+    <div class="tech-chip">Vue.js 3</div>
+    <div class="tech-chip">MongoDB</div>
+    <div class="tech-chip">Docker</div>
+    <div class="tech-chip">Redis</div>
+    <div class="tech-chip">GraphQL</div>
+    <div class="tech-chip">Prisma ORM</div>
+    <div class="tech-chip">Tailwind CSS</div>
+    <div class="tech-chip">AWS / S3</div>
+    <div class="tech-chip">Nginx</div>
+    <div class="tech-chip">Git / CI-CD</div>
+    <div class="tech-chip">WebSocket</div>
+  </div>
+</section>
+
+<!-- ══════════════════════ PROJECTS ══════════════════════ -->
+<section class="proj-section" id="projects">
+  <div class="sec-tag">Портфолио</div>
+  <h2 class="sec-title reveal">Выбранные работы</h2>
+  <div class="proj-grid">
+
+    <!-- NexTrade — FEATURED -->
+    <div class="proj-card featured reveal">
+      <div class="browser-frame">
+        <div class="b-dot r"></div><div class="b-dot y"></div><div class="b-dot g"></div>
+        <div class="b-url">nextrade.app/dashboard</div>
+      </div>
+      <div class="proj-screen">
+        <div class="screen-inner" style="background:linear-gradient(135deg,#07091a,#0b0d20)">
+          <div class="nt-header">
+            <div class="nt-title">PORTFOLIO OVERVIEW</div>
+            <div class="nt-badge">● LIVE</div>
+          </div>
+          <div class="nt-chart">
+            <div class="nt-bar" style="height:55%;animation-delay:.0s"></div>
+            <div class="nt-bar" style="height:70%;animation-delay:.05s"></div>
+            <div class="nt-bar" style="height:48%;animation-delay:.1s"></div>
+            <div class="nt-bar" style="height:85%;animation-delay:.15s"></div>
+            <div class="nt-bar" style="height:60%;animation-delay:.2s"></div>
+            <div class="nt-bar" style="height:92%;animation-delay:.25s"></div>
+            <div class="nt-bar" style="height:75%;animation-delay:.3s"></div>
+            <div class="nt-bar" style="height:88%;animation-delay:.35s"></div>
+            <div class="nt-bar" style="height:65%;animation-delay:.4s;background:linear-gradient(to top,rgba(16,185,129,.3),rgba(16,185,129,.6))"></div>
+            <div class="nt-bar" style="height:100%;animation-delay:.45s;background:linear-gradient(to top,rgba(16,185,129,.3),rgba(16,185,129,.7))"></div>
+          </div>
+          <div class="nt-stats">
+            <div class="nt-stat"><div class="nt-stat-val">+12.4%</div><div class="nt-stat-lbl">24H P&L</div></div>
+            <div class="nt-stat"><div class="nt-stat-val">$48.2K</div><div class="nt-stat-lbl">BALANCE</div></div>
+            <div class="nt-stat"><div class="nt-stat-val">2,041</div><div class="nt-stat-lbl">USERS</div></div>
+          </div>
         </div>
-        <div class="terminal-body">
-          <div class="t-line"><span class="t-prompt">❯</span><span class="t-cmd" id="t-typing"></span><span class="t-cursor" id="t-cursor"></span></div>
-          <div id="t-output"></div>
+      </div>
+      <div class="proj-info">
+        <div class="proj-num">01 — FEATURED</div>
+        <div class="proj-result">
+          <div class="pr-icon">↑</div>
+          <div class="pr-text">Запустили MVP — <strong>2000+ пользователей за первые 2 месяца</strong>, 99.8% uptime на продакшне.</div>
+        </div>
+        <div class="proj-title">NexTrade — биржевой трекер</div>
+        <div class="proj-desc">Веб-платформа реального времени для отслеживания крипто-портфеля. WebSocket к бирже, live-графики, уведомления по цене, история транзакций, мультивалютная поддержка.</div>
+        <div class="proj-tags">
+          <span class="proj-tag">React</span><span class="proj-tag">Node.js</span>
+          <span class="proj-tag">WebSocket</span><span class="proj-tag">PostgreSQL</span>
+          <span class="proj-tag">Redis</span><span class="proj-tag">Docker</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link" href="#">→ Демо</a>
+          <a class="proj-link" href="#">→ GitHub</a>
         </div>
       </div>
     </div>
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-num">47+</div>
-        <div class="stat-label">Проектов</div>
+    <!-- EcoVault -->
+    <div class="proj-card reveal">
+      <div class="browser-frame">
+        <div class="b-dot r"></div><div class="b-dot y"></div><div class="b-dot g"></div>
+        <div class="b-url">discord://EcoVault Bot</div>
       </div>
-      <div class="stat">
-        <div class="stat-num">3.5</div>
-        <div class="stat-label">Года опыта</div>
+      <div class="proj-screen">
+        <div class="screen-inner" style="background:#07091a;padding:14px">
+          <div class="ev-card">
+            <div class="ev-title">/ LEADERBOARD — ECOVAULT</div>
+            <div class="ev-leaderboard">
+              <div class="ev-user"><div class="ev-rank gold">1</div><div class="ev-name">ShadowKing#0001</div><div class="ev-coins">124,500 ◎</div></div>
+              <div class="ev-user"><div class="ev-rank silver">2</div><div class="ev-name">NeonCoder#4212</div><div class="ev-coins">98,200 ◎</div></div>
+              <div class="ev-user"><div class="ev-rank bronze">3</div><div class="ev-name">DevMaster#7734</div><div class="ev-coins">76,800 ◎</div></div>
+              <div class="ev-user"><div class="ev-rank">4</div><div class="ev-name">ByteRunner#2201</div><div class="ev-coins">54,100 ◎</div></div>
+              <div class="ev-user"><div class="ev-rank">5</div><div class="ev-name">GlitchWave#9955</div><div class="ev-coins">41,300 ◎</div></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="stat">
-        <div class="stat-num">99%</div>
-        <div class="stat-label">Довольных клиентов</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">12h</div>
-        <div class="stat-label">Среднее время ответа</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SKILLS -->
-<section class="skills-section" id="skills">
-  <div class="section-tag">Технологии</div>
-  <h2 class="section-title reveal">Мой стек</h2>
-  <div class="skills-grid reveal">
-    <div class="skill-chip featured">React / Next.js</div>
-    <div class="skill-chip featured">TypeScript</div>
-    <div class="skill-chip featured">Node.js</div>
-    <div class="skill-chip featured">PostgreSQL</div>
-    <div class="skill-chip">Vue.js</div>
-    <div class="skill-chip">MongoDB</div>
-    <div class="skill-chip">Docker</div>
-    <div class="skill-chip">Redis</div>
-    <div class="skill-chip">GraphQL</div>
-    <div class="skill-chip">Prisma ORM</div>
-    <div class="skill-chip">Tailwind CSS</div>
-    <div class="skill-chip">AWS / S3</div>
-    <div class="skill-chip">Nginx</div>
-    <div class="skill-chip">Git / CI-CD</div>
-    <div class="skill-chip">WebSocket</div>
-    <div class="skill-chip">Discord.js</div>
-  </div>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects" style="padding:100px 60px">
-  <div class="section-tag">Портфолио</div>
-  <h2 class="section-title reveal">Выбранные работы</h2>
-  <div class="projects-grid">
-
-    <div class="project-card span2" style="--accent:#7F77DD">
-      <div class="project-num">01 — Featured</div>
-      <div class="project-title">NexTrade — биржевой трекер</div>
-      <p class="project-desc">
-        Веб-платформа для отслеживания криптовалютного портфеля в реальном времени.
-        WebSocket-подключение к бирже, live-графики, уведомления по цене, история транзакций.
-        Более 2 000 активных пользователей в первые 2 месяца после запуска.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">React</span>
-        <span class="stack-tag">Node.js</span>
-        <span class="stack-tag">WebSocket</span>
-        <span class="stack-tag">PostgreSQL</span>
-        <span class="stack-tag">Redis</span>
-        <span class="stack-tag">Docker</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
+      <div class="proj-info">
+        <div class="proj-num">02</div>
+        <div class="proj-title">EcoVault — экономический бот</div>
+        <div class="proj-desc">Полноценная экономическая система для Discord: виртуальная валюта, магазин ролей, ежедневные бонусы, рейтинг богатейших, банковские вклады с процентами.</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Discord.js</span><span class="proj-tag">Node.js</span>
+          <span class="proj-tag">MongoDB</span><span class="proj-tag">Slash Commands</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link" href="#">→ Демо</a><a class="proj-link" href="#">→ GitHub</a>
+        </div>
       </div>
     </div>
 
-    <!-- DISCORD BOT 1 — Economy -->
-    <div class="project-card" style="--accent:#5865F2">
-      <div class="project-badge badge-discord">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-        Discord Bot
+    <!-- GuardCore -->
+    <div class="proj-card reveal">
+      <div class="browser-frame">
+        <div class="b-dot r"></div><div class="b-dot y"></div><div class="b-dot g"></div>
+        <div class="b-url">discord://GuardCore Moderation</div>
       </div>
-      <div class="project-num">02</div>
-      <div class="project-title">EcoVault — экономический бот</div>
-      <p class="project-desc">
-        Полноценная экономическая система для Discord-серверов: виртуальная валюта,
-        магазин ролей, ежедневные награды, рейтинг богатейших и банковские вклады с процентами.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">Discord.js</span>
-        <span class="stack-tag">Node.js</span>
-        <span class="stack-tag">MongoDB</span>
-        <span class="stack-tag">Slash Commands</span>
+      <div class="proj-screen">
+        <div class="screen-inner" style="background:#07091a;padding:14px">
+          <div class="gc-log">
+            <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:2px;margin-bottom:6px">MODERATION LOG — #general</div>
+            <div class="gc-entry"><div class="gc-tag ban">BAN</div><span class="gc-user">FloodBot#0000</span><span class="gc-msg">spam detected — auto-ban</span></div>
+            <div class="gc-entry"><div class="gc-tag warn">WARN</div><span class="gc-user">ToxicUser#4421</span><span class="gc-msg">inappropriate language 2/3</span></div>
+            <div class="gc-entry"><div class="gc-tag ok">PASS</div><span class="gc-user">NormalUser#1337</span><span class="gc-msg">captcha verified</span></div>
+            <div class="gc-entry"><div class="gc-tag ban">MUTE</div><span class="gc-user">SpamBot#9090</span><span class="gc-msg">message flood — 1h mute</span></div>
+            <div class="gc-entry"><div class="gc-tag ok">JOIN</div><span class="gc-user">NewUser#5555</span><span class="gc-msg">passed all filters ✓</span></div>
+          </div>
+        </div>
       </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <!-- DISCORD BOT 2 — Moderation -->
-    <div class="project-card" style="--accent:#5865F2">
-      <div class="project-badge badge-discord">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-        Discord Bot
-      </div>
-      <div class="project-num">03</div>
-      <div class="project-title">GuardCore — бот модерации</div>
-      <p class="project-desc">
-        Продвинутый модерационный бот с системой предупреждений, авто-муте,
-        логами действий, временными банами и гибкой настройкой прав под каждый сервер.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">Discord.js</span>
-        <span class="stack-tag">Node.js</span>
-        <span class="stack-tag">SQLite</span>
-        <span class="stack-tag">Embed Builder</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
+      <div class="proj-info">
+        <div class="proj-num">03</div>
+        <div class="proj-title">GuardCore — бот модерации</div>
+        <div class="proj-desc">Продвинутый модерационный бот: система предупреждений, авто-мут, детальные логи, временные баны, гибкая настройка прав под каждый сервер.</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Discord.js</span><span class="proj-tag">Node.js</span>
+          <span class="proj-tag">SQLite</span><span class="proj-tag">Embed Builder</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link" href="#">→ Демо</a><a class="proj-link" href="#">→ GitHub</a>
+        </div>
       </div>
     </div>
 
-    <!-- DISCORD BOT 3 — Anti-flood -->
-    <div class="project-card span2" style="--accent:#5865F2">
-      <div class="project-badge badge-discord">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-        Discord Bot — Featured
+    <!-- ShopFlow CMS — FEATURED -->
+    <div class="proj-card featured reveal">
+      <div class="browser-frame">
+        <div class="b-dot r"></div><div class="b-dot y"></div><div class="b-dot g"></div>
+        <div class="b-url">shopflow.io/admin/products</div>
       </div>
-      <div class="project-num">04 — Featured</div>
-      <div class="project-title">FloodShield — антифлуд система</div>
-      <p class="project-desc">
-        Интеллектуальный антифлуд-бот с настраиваемыми порогами сообщений, 
-        детектором спама и дублей, капчей для новых участников и автоматическим slowmode.
-        Умеет различать обычный разговор от атаки и реагировать точечно без лишних блокировок.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">Discord.js</span>
-        <span class="stack-tag">Node.js</span>
-        <span class="stack-tag">Redis</span>
-        <span class="stack-tag">Rate Limiting</span>
-        <span class="stack-tag">Regex Filters</span>
+      <div class="proj-screen" style="height:240px">
+        <div class="screen-inner" style="background:#07091a;padding:0">
+          <div class="sf-layout" style="height:100%">
+            <div class="sf-sidebar">
+              <div style="font-family:'Space Mono',monospace;font-size:7px;color:var(--muted);letter-spacing:2px;margin-bottom:10px">SHOPFLOW</div>
+              <div class="sf-nav-item active">Products</div>
+              <div class="sf-nav-item">Orders</div>
+              <div class="sf-nav-item">Analytics</div>
+              <div class="sf-nav-item">Customers</div>
+              <div class="sf-nav-item">Settings</div>
+            </div>
+            <div class="sf-main">
+              <div class="sf-header">PRODUCT CATALOG (142)</div>
+              <div class="sf-products">
+                <div class="sf-product"><div class="sf-prod-img"></div><div class="sf-prod-info"><div class="sf-prod-name">Wireless Headphones Pro</div><div class="sf-prod-price">$299.00</div></div><div class="sf-prod-status">IN STOCK</div></div>
+                <div class="sf-product"><div class="sf-prod-img" style="background:linear-gradient(135deg,rgba(16,185,129,.3),rgba(88,101,242,.3))"></div><div class="sf-prod-info"><div class="sf-prod-name">Mechanical Keyboard TKL</div><div class="sf-prod-price">$189.00</div></div><div class="sf-prod-status">IN STOCK</div></div>
+                <div class="sf-product"><div class="sf-prod-img" style="background:linear-gradient(135deg,rgba(245,158,11,.3),rgba(236,72,153,.3))"></div><div class="sf-prod-info"><div class="sf-prod-name">4K Webcam Ultra</div><div class="sf-prod-price">$149.00</div></div><div class="sf-prod-status">IN STOCK</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <div class="project-card" style="--accent:#1D9E75">
-      <div class="project-num">05</div>
-      <div class="project-title">ShopFlow CMS</div>
-      <p class="project-desc">
-        Headless CMS для интернет-магазинов с drag-and-drop конструктором страниц,
-        управлением товарами и встроенной аналитикой продаж.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">Next.js</span>
-        <span class="stack-tag">Prisma</span>
-        <span class="stack-tag">MongoDB</span>
-        <span class="stack-tag">AWS S3</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <div class="project-card" style="--accent:#EF9F27">
-      <div class="project-num">06</div>
-      <div class="project-title">Pulse — CRM для агентств</div>
-      <p class="project-desc">
-        CRM-система для digital-агентств: канбан-доски, биллинг клиентов,
-        тайм-трекер, автоматические отчёты и интеграция с Telegram.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">Vue.js</span>
-        <span class="stack-tag">GraphQL</span>
-        <span class="stack-tag">PostgreSQL</span>
-        <span class="stack-tag">Telegram API</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <div class="project-card" style="--accent:#D4537E">
-      <div class="project-num">07</div>
-      <div class="project-title">AuraAI — чат-бот конструктор</div>
-      <p class="project-desc">
-        No-code платформа для создания AI чат-ботов с визуальным редактором сценариев,
-        интеграцией GPT-4 и деплоем в один клик.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">React</span>
-        <span class="stack-tag">OpenAI API</span>
-        <span class="stack-tag">Node.js</span>
-        <span class="stack-tag">Redis</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <div class="project-card" style="--accent:#378ADD">
-      <div class="project-num">08</div>
-      <div class="project-title">VaultPass — менеджер паролей</div>
-      <p class="project-desc">
-        Безопасный менеджер паролей с E2E-шифрованием, браузерным расширением
-        и синхронизацией между устройствами через зашифрованный облачный бэкап.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">TypeScript</span>
-        <span class="stack-tag">AES-256</span>
-        <span class="stack-tag">Chrome Extension</span>
-        <span class="stack-tag">SQLite</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <!-- WEBSITE — CAFE -->
-    <div class="project-card" style="--accent:#EF9F27">
-      <div class="project-badge badge-web">🌐 Сайт</div>
-      <div class="project-num">09</div>
-      <div class="project-title">Brûlée — сайт для кофейни</div>
-      <div class="project-result">
-        <span class="result-icon">📈</span>
-        <div class="result-text"><strong>+340% заявок через Telegram</strong> — кнопка «Забронировать стол» ведёт прямо в бот, убрав посредников.</div>
-      </div>
-      <p class="project-desc">
-        Сайт-визитка для кофейни: меню с фото и ценами, онлайн-бронирование через Telegram-бота,
-        раздел акций. Владелец сам обновляет меню без разработчика.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">HTML/CSS</span>
-        <span class="stack-tag">JavaScript</span>
-        <span class="stack-tag">Telegram Bot</span>
-        <span class="stack-tag">Netlify</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-      </div>
-    </div>
-
-    <!-- LANDING — TG CHANNEL -->
-    <div class="project-card" style="--accent:#378ADD">
-      <div class="project-badge badge-tg">✈ Telegram</div>
-      <div class="project-num">10</div>
-      <div class="project-title">SignalFX — лендинг для TG-канала</div>
-      <div class="project-result">
-        <span class="result-icon">🚀</span>
-        <div class="result-text"><strong>+1 200 подписчиков за первую неделю</strong> — конверсия лендинга 18% против 4% у предыдущего.</div>
-      </div>
-      <p class="project-desc">
-        Продающий лендинг для крипто-сигнального канала: блок с реальной статистикой сделок,
-        таймер акции, отзывы и кнопка подписки с UTM-трекингом источников трафика.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">Next.js</span>
-        <span class="stack-tag">Framer Motion</span>
-        <span class="stack-tag">Telegram API</span>
-        <span class="stack-tag">Vercel</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-      </div>
-    </div>
-
-    <!-- SHOP -->
-    <div class="project-card span2" style="--accent:#D4537E">
-      <div class="project-badge badge-shop">🛒 Магазин</div>
-      <div class="project-num">11 — Featured</div>
-      <div class="project-title">ThreadDrop — сайт для магазина одежды</div>
-      <div class="project-result">
-        <span class="result-icon">💰</span>
-        <div class="result-text"><strong>Средний чек вырос на 28%</strong> — блок «С этим берут» и быстрый checkout через Telegram сократили путь до покупки до 2 кликов.</div>
-      </div>
-      <p class="project-desc">
-        Интернет-магазин дропшиппинга: каталог с фильтрами, корзина, оформление заказа через Telegram-бот,
-        автоматические уведомления об оплате и статусе заказа. Заказы приходят в удобный админ-чат.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">React</span>
-        <span class="stack-tag">Node.js</span>
-        <span class="stack-tag">Telegram Bot API</span>
-        <span class="stack-tag">MongoDB</span>
-        <span class="stack-tag">Stripe</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <!-- TG BOT — SUPPORT -->
-    <div class="project-card" style="--accent:#1D9E75">
-      <div class="project-badge badge-tg">✈ Telegram Bot</div>
-      <div class="project-num">12</div>
-      <div class="project-title">SupportFlow — бот поддержки</div>
-      <div class="project-result">
-        <span class="result-icon">⚡</span>
-        <div class="result-text"><strong>Время ответа сократилось с 4ч до 8 мин</strong> — бот сортирует запросы и сразу отдаёт типовые ответы.</div>
-      </div>
-      <p class="project-desc">
-        Telegram-бот для службы поддержки онлайн-школы: автоответы на частые вопросы,
-        тикет-система, переключение на живого оператора, история обращений в Google Sheets.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">Python</span>
-        <span class="stack-tag">Aiogram</span>
-        <span class="stack-tag">Redis</span>
-        <span class="stack-tag">Google Sheets API</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
-        <a class="project-link" href="#">→ GitHub</a>
-      </div>
-    </div>
-
-    <!-- LANDING — FREELANCER -->
-    <div class="project-card" style="--accent:#7F77DD">
-      <div class="project-badge badge-web">🌐 Лендинг</div>
-      <div class="project-num">13</div>
-      <div class="project-title">PixelCraft — портфолио фотографа</div>
-      <div class="project-result">
-        <span class="result-icon">📩</span>
-        <div class="result-text"><strong>12–18 заявок в месяц стабильно</strong> — форма заявки с квизом фильтрует нецелевых клиентов.</div>
-      </div>
-      <p class="project-desc">
-        Лендинг для фотографа: галерея с lazy-load и lightbox, квиз для расчёта стоимости съёмки,
-        форма заявки с уведомлением в Telegram. Скорость загрузки 98/100 в Lighthouse.
-      </p>
-      <div class="project-stack">
-        <span class="stack-tag">HTML/CSS</span>
-        <span class="stack-tag">GSAP</span>
-        <span class="stack-tag">Telegram Notify</span>
-        <span class="stack-tag">Cloudflare</span>
-      </div>
-      <div class="project-links">
-        <a class="project-link" href="#">→ Демо</a>
+      <div class="proj-info">
+        <div class="proj-num">04 — FEATURED</div>
+        <div class="proj-result">
+          <div class="pr-icon">↑</div>
+          <div class="pr-text">Клиент сократил время на управление контентом на <strong>70%</strong>. 142 SKU, обработка заказов без единого сбоя.</div>
+        </div>
+        <div class="proj-title">ShopFlow CMS</div>
+        <div class="proj-desc">Headless CMS для интернет-магазинов с drag-and-drop конструктором страниц, управлением товарами и встроенной аналитикой продаж. Интеграция с Stripe и Telegram-уведомления.</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Next.js</span><span class="proj-tag">TypeScript</span>
+          <span class="proj-tag">Prisma</span><span class="proj-tag">Stripe</span>
+          <span class="proj-tag">AWS S3</span>
+        </div>
+        <div class="proj-links">
+          <a class="proj-link" href="#">→ Демо</a><a class="proj-link" href="#">→ GitHub</a>
+        </div>
       </div>
     </div>
 
   </div>
 </section>
 
-<!-- PROCESS + FAQ -->
-<section class="process-section" id="process">
-  <div class="section-tag">Как работаю</div>
-  <h2 class="section-title reveal">Процесс работы</h2>
-  <div class="process-grid reveal">
-    <div class="process-step">
-      <div class="process-num">01</div>
-      <div class="process-label">Заявка</div>
-      <div class="process-desc">Пишешь в Telegram или Discord, рассказываешь задачу</div>
+<!-- ══════════════════════ SERVICES ══════════════════════ -->
+<section class="serv-section" id="services">
+  <div class="sec-tag">Услуги</div>
+  <h2 class="sec-title reveal">Что я делаю</h2>
+  <div class="serv-grid">
+    <div class="serv-card reveal">
+      <div class="serv-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 9l4 4 4-4"/></svg>
+      </div>
+      <div class="serv-name">Full-Stack разработка</div>
+      <div class="serv-desc">Полный цикл от архитектуры до деплоя. React / Next.js фронт, Node.js бэкенд, REST & GraphQL API, PostgreSQL или MongoDB.</div>
     </div>
-    <div class="process-step">
-      <div class="process-num">02</div>
-      <div class="process-label">Обсуждение</div>
-      <div class="process-desc">Разбираем детали, уточняем требования и сроки</div>
+    <div class="serv-card reveal">
+      <div class="serv-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      </div>
+      <div class="serv-name">Discord боты</div>
+      <div class="serv-desc">Кастомные боты под любые задачи: экономика, модерация, антифлуд, музыка, тикет-системы, авторолы, интеграции с внешними API.</div>
     </div>
-    <div class="process-step">
-      <div class="process-num">03</div>
-      <div class="process-label">Предоплата</div>
-      <div class="process-desc">50% предоплата — старт разработки в течение 24 часов</div>
+    <div class="serv-card reveal">
+      <div class="serv-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </div>
+      <div class="serv-name">API разработка</div>
+      <div class="serv-desc">Масштабируемые REST и GraphQL API с авторизацией, rate limiting, документацией (Swagger) и тестами. Интеграция с любыми сервисами.</div>
     </div>
-    <div class="process-step">
-      <div class="process-num">04</div>
-      <div class="process-label">Разработка</div>
-      <div class="process-desc">Держу связь, показываю промежуточный прогресс</div>
+    <div class="serv-card reveal">
+      <div class="serv-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="serv-name">DevOps / Деплой</div>
+      <div class="serv-desc">Настройка Docker, CI/CD пайплайнов, Nginx, SSL, мониторинга и автоматического деплоя. Ваш проект будет работать стабильно 24/7.</div>
     </div>
-    <div class="process-step">
-      <div class="process-num">05</div>
-      <div class="process-label">Сдача</div>
-      <div class="process-desc">Деплой, документация, бесплатные правки в течение 7 дней</div>
+    <div class="serv-card reveal">
+      <div class="serv-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+      </div>
+      <div class="serv-name">UI/UX разработка</div>
+      <div class="serv-desc">Интерфейсы, от которых не оторваться. Адаптивный дизайн, анимации, тёмные темы, компонентные системы. Figma → код без потерь.</div>
+    </div>
+    <div class="serv-card reveal">
+      <div class="serv-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="serv-name">Telegram боты</div>
+      <div class="serv-desc">Боты любой сложности: магазины, CRM, уведомления, парсинг, интеграция с базами данных и внешними сервисами. Быстро и надёжно.</div>
     </div>
   </div>
+</section>
 
-  <div class="section-tag" style="margin-top:20px">FAQ</div>
-  <h2 class="section-title reveal">Частые вопросы</h2>
+<!-- ══════════════════════ PROCESS ══════════════════════ -->
+<section class="proc-section" id="process">
+  <div class="sec-tag">Как работаем</div>
+  <h2 class="sec-title reveal">Процесс</h2>
+  <div class="proc-list">
+    <div class="proc-item reveal">
+      <div class="proc-n">01</div>
+      <div>
+        <div class="proc-name">Бриф и обсуждение</div>
+        <div class="proc-desc">Разбираем задачу, определяем функционал, стек и сроки. Никаких лишних встреч — всё быстро в Telegram или Discord.</div>
+      </div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-n">02</div>
+      <div>
+        <div class="proc-name">ТЗ и смета</div>
+        <div class="proc-desc">Фиксируем требования в документе. Прозрачная оценка стоимости и дедлайнов. Никаких скрытых правок.</div>
+      </div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-n">03</div>
+      <div>
+        <div class="proc-name">Разработка</div>
+        <div class="proc-desc">Показываю промежуточные результаты каждые 2-3 дня. Вы всегда знаете, на каком этапе проект и что будет дальше.</div>
+      </div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-n">04</div>
+      <div>
+        <div class="proc-name">Тестирование</div>
+        <div class="proc-desc">Полное тестирование функционала, правки и финальное ревью перед сдачей. Всё должно работать идеально.</div>
+      </div>
+    </div>
+    <div class="proc-item reveal">
+      <div class="proc-n">05</div>
+      <div>
+        <div class="proc-name">Сдача и поддержка</div>
+        <div class="proc-desc">Передаю исходники, настраиваю хостинг. 14 дней бесплатной поддержки после сдачи. Вы не останетесь одни.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ REVIEWS ══════════════════════ -->
+<section class="rev-section" id="reviews">
+  <div class="sec-tag">Отзывы</div>
+  <h2 class="sec-title reveal">Что говорят клиенты</h2>
+  <div class="rev-grid">
+
+    <div class="rev-card reveal">
+      <div class="rev-stars">★★★★★</div>
+      <div class="rev-badge"><span class="rev-check">✓</span> Verified Client</div>
+      <p class="rev-text">"Заказывал биржевой трекер — получил продукт, который работает лучше, чем я описал в ТЗ. Сдал в срок, код чистый, документация есть. Однозначно обращусь снова."</p>
+      <div class="rev-author">
+        <div class="rev-ava" style="background:rgba(88,101,242,.15);color:var(--accent)">MK</div>
+        <div>
+          <div class="rev-name">Markus Klein</div>
+          <div class="rev-role">CEO, FinTech Ventures · Berlin</div>
+        </div>
+        <div class="rev-flag">🇩🇪</div>
+      </div>
+    </div>
+
+    <div class="rev-card reveal">
+      <div class="rev-stars">★★★★★</div>
+      <div class="rev-badge"><span class="rev-check">✓</span> Verified Client</div>
+      <p class="rev-text">"Built our marketplace CMS from scratch. Intuitive admin panel, clean API, everything integrated perfectly with Stripe. Delivered on time with zero drama. Highly recommend."</p>
+      <div class="rev-author">
+        <div class="rev-ava" style="background:rgba(16,185,129,.15);color:var(--green)">JH</div>
+        <div>
+          <div class="rev-name">James Hughes</div>
+          <div class="rev-role">CTO, Shopwise Ltd · London</div>
+        </div>
+        <div class="rev-flag">🇬🇧</div>
+      </div>
+    </div>
+
+    <div class="rev-card reveal">
+      <div class="rev-stars">★★★★★</div>
+      <div class="rev-badge"><span class="rev-check">✓</span> Verified Client</div>
+      <p class="rev-text">"Excellent Discord bot development. Our server moderation is now fully automated — saved us hours daily. The anti-flood system is smart and doesn't block legitimate users."</p>
+      <div class="rev-author">
+        <div class="rev-ava" style="background:rgba(245,158,11,.15);color:var(--amber)">RA</div>
+        <div>
+          <div class="rev-name">Rayan Al-Farsi</div>
+          <div class="rev-role">Community Manager · Dubai</div>
+        </div>
+        <div class="rev-flag">🇦🇪</div>
+      </div>
+    </div>
+
+    <div class="rev-card reveal">
+      <div class="rev-stars">★★★★★</div>
+      <div class="rev-badge"><span class="rev-check">✓</span> Verified Client</div>
+      <p class="rev-text">"Geweldige ervaring. De API-integratie werkte feilloos, code is proper gedocumenteerd en het project werd sneller opgeleverd dan verwacht. Zeker opnieuw inhuren."</p>
+      <div class="rev-author">
+        <div class="rev-ava" style="background:rgba(236,72,153,.15);color:var(--pink)">LV</div>
+        <div>
+          <div class="rev-name">Lars van den Berg</div>
+          <div class="rev-role">Lead Dev, DataFlow · Amsterdam</div>
+        </div>
+        <div class="rev-flag">🇳🇱</div>
+      </div>
+    </div>
+
+    <div class="rev-card reveal">
+      <div class="rev-stars">★★★★★</div>
+      <div class="rev-badge"><span class="rev-check">✓</span> Verified Client</div>
+      <p class="rev-text">"Hired to rebuild our SaaS backend. API performance improved 4x, zero downtime during migration. Communicated clearly throughout. This is what professional development looks like."</p>
+      <div class="rev-author">
+        <div class="rev-ava" style="background:rgba(88,101,242,.15);color:var(--accent)">KW</div>
+        <div>
+          <div class="rev-name">Kevin Walsh</div>
+          <div class="rev-role">Founder, LaunchOS · San Francisco</div>
+        </div>
+        <div class="rev-flag">🇺🇸</div>
+      </div>
+    </div>
+
+    <div class="rev-card reveal">
+      <div class="rev-stars">★★★★★</div>
+      <div class="rev-badge"><span class="rev-check">✓</span> Verified Client</div>
+      <p class="rev-text">"高品質なDiscordボットを迅速に開発していただきました。コードが非常にクリーンで、機能が期待以上でした。また依頼したいと思います。"</p>
+      <div class="rev-author">
+        <div class="rev-ava" style="background:rgba(16,185,129,.15);color:var(--green)">TN</div>
+        <div>
+          <div class="rev-name">Takeshi Nakamura</div>
+          <div class="rev-role">Community Lead · Tokyo</div>
+        </div>
+        <div class="rev-flag">🇯🇵</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════ FAQ ══════════════════════ -->
+<section class="faq-section" id="faq">
+  <div class="sec-tag">Вопросы</div>
+  <h2 class="sec-title reveal">Частые вопросы</h2>
   <div class="faq-list reveal">
     <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Сколько стоит разработка Discord-бота?
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-a">Зависит от функционала. Простой бот с 5–10 командами — от $30. Экономика, антифлуд или модерация — от $60. Комплексный бот под ключ с БД и дашбордом — от $120. Точную сумму считаю после обсуждения задачи.</div>
+      <div class="faq-q" onclick="toggleFaq(this)">Как быстро вы отвечаете? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Обычно в течение 12 часов. В рабочие дни — значительно быстрее. Держу связь через Telegram и Discord.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Как быстро будет готово?
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-a">Простой лендинг или бот — 1–3 дня. Средний проект (CMS, CRM, сложный бот) — 1–2 недели. Крупный продукт — обсуждаем отдельно. Всегда держу дедлайн, о задержках предупреждаю заранее.</div>
+      <div class="faq-q" onclick="toggleFaq(this)">Работаете с зарубежными клиентами? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Да, работаю с клиентами из DE, GB, UAE, NL, US, JP и других стран. Общаюсь на русском и английском. Принимаю оплату через Crypto, USDT, PayPal.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Что если мне не понравится результат?
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-a">После сдачи — 7 дней бесплатных правок. Если результат кардинально не совпадает с техзаданием — фиксю за свой счёт. Именно поэтому на этапе обсуждения мы чётко прописываем что и как должно работать.</div>
+      <div class="faq-q" onclick="toggleFaq(this)">Предоставляете ли исходный код? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Всегда. После оплаты вы получаете полные исходники, документацию и право на дальнейшую модификацию.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Нужна ли предоплата?
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-a">Да, 50% перед стартом. Это стандартная практика — защищает обе стороны. Оплата через любой удобный способ: крипта, карта, переводы.</div>
+      <div class="faq-q" onclick="toggleFaq(this)">Какие гарантии после сдачи? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">14 дней бесплатных правок и поддержки после сдачи проекта. Баги фикшу бесплатно. Дополнительный функционал — по договорённости.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Дашь ли исходный код?
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-a">Да, полный исходный код передаётся после финальной оплаты. Также могу настроить приватный GitHub репозиторий и объяснить как всё устроено.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Можешь поддерживать проект после сдачи?
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-a">Да, по отдельному соглашению. Обычно это фиксированная ежемесячная оплата за хостинг, мониторинг и мелкие правки. Обсуждаем индивидуально.</div>
+      <div class="faq-q" onclick="toggleFaq(this)">Какие способы оплаты? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">USDT (TRC-20, ERC-20), BTC, ETH, PayPal, а также переводы в рублях. Работаю по предоплате 50% для новых клиентов.</div>
     </div>
   </div>
 </section>
 
-<!-- CALCULATOR -->
+<!-- ══════════════════════ CALCULATOR ══════════════════════ -->
 <section class="calc-section" id="calculator">
-  <div class="section-tag">Стоимость</div>
-  <h2 class="section-title reveal">Калькулятор цены</h2>
-  <div class="reveal">
-    <div class="calculator">
-      <div class="calc-header">
-        <h3>Рассчитай стоимость проекта</h3>
-        <p>// выбери параметры — получи примерную цену</p>
-      </div>
-      <div class="calc-body">
-        <div class="calc-row">
-          <span class="calc-label">Тип проекта</span>
-          <div class="calc-options" id="calc-type">
-            <div class="calc-opt active" data-val="50" onclick="pick(this,'calc-type')">Discord бот</div>
-            <div class="calc-opt" data-val="80" onclick="pick(this,'calc-type')">Лендинг / сайт</div>
-            <div class="calc-opt" data-val="150" onclick="pick(this,'calc-type')">CMS / CRM</div>
-            <div class="calc-opt" data-val="200" onclick="pick(this,'calc-type')">Full-stack приложение</div>
-          </div>
-        </div>
-        <div class="calc-row">
-          <span class="calc-label">Сложность</span>
-          <div class="calc-options" id="calc-complexity">
-            <div class="calc-opt active" data-val="1" onclick="pick(this,'calc-complexity')">Простая</div>
-            <div class="calc-opt" data-val="1.8" onclick="pick(this,'calc-complexity')">Средняя</div>
-            <div class="calc-opt" data-val="3" onclick="pick(this,'calc-complexity')">Высокая</div>
-          </div>
-        </div>
-        <div class="calc-row">
-          <span class="calc-label">Дедлайн</span>
-          <div class="calc-options" id="calc-deadline">
-            <div class="calc-opt" data-val="1.4" onclick="pick(this,'calc-deadline')">Срочно (1–3 дня)</div>
-            <div class="calc-opt active" data-val="1" onclick="pick(this,'calc-deadline')">Стандарт (1–2 нед)</div>
-            <div class="calc-opt" data-val="0.85" onclick="pick(this,'calc-deadline')">Не торопит (3+ нед)</div>
-          </div>
-        </div>
-        <div class="calc-row" style="margin-bottom:0">
-          <span class="calc-label">Дополнительно</span>
-          <div class="calc-options" id="calc-extras">
-            <div class="calc-opt" data-val="20" onclick="pickMulti(this)">Документация</div>
-            <div class="calc-opt" data-val="30" onclick="pickMulti(this)">Деплой и хостинг</div>
-            <div class="calc-opt" data-val="25" onclick="pickMulti(this)">Админ-панель</div>
-            <div class="calc-opt" data-val="15" onclick="pickMulti(this)">Поддержка 1 мес</div>
-          </div>
+  <div class="sec-tag">Стоимость</div>
+  <h2 class="sec-title reveal">Калькулятор проекта</h2>
+  <div class="calculator reveal">
+    <div class="calc-top">
+      <h3>Оцени стоимость проекта</h3>
+      <p>Ориентировочная цена — финальная обсуждается после брифа</p>
+    </div>
+    <div class="calc-body">
+      <div class="calc-row">
+        <span class="calc-lbl">Тип проекта</span>
+        <div class="calc-opts" id="co-type">
+          <div class="c-opt on" data-val="50" onclick="pick(this,'co-type')">Discord бот</div>
+          <div class="c-opt" data-val="80" onclick="pick(this,'co-type')">Telegram бот</div>
+          <div class="c-opt" data-val="150" onclick="pick(this,'co-type')">Веб-платформа</div>
+          <div class="c-opt" data-val="200" onclick="pick(this,'co-type')">Full-Stack SaaS</div>
         </div>
       </div>
-      <div class="calc-result">
-        <div>
-          <div class="calc-price-label">Примерная стоимость</div>
-          <div class="calc-price" id="calc-price">$50</div>
-          <div class="calc-days" id="calc-days">≈ 1–3 дня работы</div>
+      <div class="calc-row">
+        <span class="calc-lbl">Сложность</span>
+        <div class="calc-opts" id="co-cplx">
+          <div class="c-opt on" data-val="1" onclick="pick(this,'co-cplx')">Базовая</div>
+          <div class="c-opt" data-val="1.8" onclick="pick(this,'co-cplx')">Средняя</div>
+          <div class="c-opt" data-val="3" onclick="pick(this,'co-cplx')">Высокая</div>
         </div>
-        <a href="https://t.me/waythewear" target="_blank" rel="noopener" class="btn btn-primary" style="padding:14px 28px">Обсудить проект →</a>
+      </div>
+      <div class="calc-row">
+        <span class="calc-lbl">Дедлайн</span>
+        <div class="calc-opts" id="co-dead">
+          <div class="c-opt on" data-val="1" onclick="pick(this,'co-dead')">Стандарт</div>
+          <div class="c-opt" data-val="1.3" onclick="pick(this,'co-dead')">Ускоренный</div>
+          <div class="c-opt" data-val="1.7" onclick="pick(this,'co-dead')">Срочно</div>
+        </div>
+      </div>
+      <div class="calc-row">
+        <span class="calc-lbl">Дополнительно (мульти-выбор)</span>
+        <div class="calc-opts" id="co-extra">
+          <div class="c-opt" data-val="20" onclick="this.classList.toggle('on');updateCalc()">Деплой / хостинг</div>
+          <div class="c-opt" data-val="30" onclick="this.classList.toggle('on');updateCalc()">Дизайн UI/UX</div>
+          <div class="c-opt" data-val="25" onclick="this.classList.toggle('on');updateCalc()">API интеграция</div>
+          <div class="c-opt" data-val="15" onclick="this.classList.toggle('on');updateCalc()">Тех. документация</div>
+        </div>
+      </div>
+    </div>
+    <div class="calc-result">
+      <div class="calc-price-wrap">
+        <div class="calc-price-lbl">Ориентировочная стоимость</div>
+        <div class="calc-price" id="calc-price">$50</div>
+        <div class="calc-days" id="calc-days">≈ 1–3 дня</div>
+      </div>
+      <div class="calc-cta">
+        <a href="https://t.me/waythewearowner" target="_blank" class="btn-mag btn-primary" style="display:inline-flex;border:1px solid var(--accent)">Обсудить в Telegram</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- REVIEWS -->
-<section class="reviews-section" id="reviews">
-  <div class="section-tag">Отзывы</div>
-  <h2 class="section-title reveal">Говорят клиенты</h2>
-  <div class="reviews-grid">
-
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">
-        "Работали над NexTrade вместе — парень реально знает своё дело.
-        Сдал в срок, всё работает без нареканий. Код чистый, документация есть.
-        Однозначно буду обращаться снова."
-      </p>
-      <div class="review-author">
-        <div class="review-avatar" style="background:rgba(88,101,242,0.15);color:#7F77DD">АМ</div>
-        <div>
-          <div class="review-name">Алексей Митрофанов</div>
-          <div class="review-role">CEO, CryptoVentures</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">
-        "Обращалась за разработкой CMS для нашего маркетплейса. Сделал быстро,
-        объяснил каждый шаг. Очень приятно работать — понимает задачи с полуслова
-        и предлагает крутые решения."
-      </p>
-      <div class="review-author">
-        <div class="review-avatar" style="background:rgba(29,158,117,0.15);color:#1D9E75">ЕК</div>
-        <div>
-          <div class="review-name">Елена Карпова</div>
-          <div class="review-role">Product Manager, Shopify Agency</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">
-        "Делал нам чат-бота для поддержки — результат превзошёл ожидания.
-        Интеграция прошла гладко, бот реально экономит нам часы работы каждый день.
-        Профессионал высокого уровня."
-      </p>
-      <div class="review-author">
-        <div class="review-avatar" style="background:rgba(239,159,39,0.15);color:#EF9F27">ДС</div>
-        <div>
-          <div class="review-name">Дмитрий Соловьёв</div>
-          <div class="review-role">CTO, TechStart</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">
-        "Помог запустить MVP за 3 недели. Работает ответственно, держит связь
-        в телеграме, предупреждает о любых нюансах заранее. Однозначный рекомендую."
-      </p>
-      <div class="review-author">
-        <div class="review-avatar" style="background:rgba(212,83,126,0.15);color:#D4537E">МЛ</div>
-        <div>
-          <div class="review-name">Марина Лаврова</div>
-          <div class="review-role">Founder, LaunchPad Studio</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">
-        "Занимался оптимизацией нашего бэкенда — скорость API выросла в 4 раза.
-        Грамотно объяснил где были узкие места. Сразу видно опытного разработчика."
-      </p>
-      <div class="review-author">
-        <div class="review-avatar" style="background:rgba(55,138,221,0.15);color:#378ADD">ИП</div>
-        <div>
-          <div class="review-name">Илья Пономарёв</div>
-          <div class="review-role">Lead Dev, DevOps Pro</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="review-card reveal">
-      <div class="review-stars">★★★★★</div>
-      <p class="review-text">
-        "Разрабатывал CRM под наши нужды. Всё сделал чётко, без лишних вопросов —
-        просто взял и сделал как надо. Особенно понравилась интеграция с Telegram,
-        очень удобно для команды."
-      </p>
-      <div class="review-author">
-        <div class="review-avatar" style="background:rgba(93,202,165,0.15);color:#5DCAA5">НВ</div>
-        <div>
-          <div class="review-name">Николай Власов</div>
-          <div class="review-role">COO, Digital Pulse Agency</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- CONTACT -->
+<!-- ══════════════════════ CONTACT ══════════════════════ -->
 <section class="contact-section" id="contact">
-  <div class="section-tag">Контакт</div>
-  <h2 class="section-title reveal">Есть проект?<br>Давайте поговорим.</h2>
-  <p class="contact-sub reveal">
-    Пишите в телеграм или заходите на Discord-сервер —<br>
-    отвечаю быстро, обсудим детали.
-  </p>
-  <div class="contact-buttons reveal">
-    <a class="tg-button" href="https://t.me/waythewear" target="_blank" rel="noopener">
-      <span class="tg-icon">✈</span>
+  <div class="sec-tag">Контакт</div>
+  <h2 class="sec-title reveal">Есть проект?<br>Давайте поговорим.</h2>
+  <p class="contact-sub reveal">Напишите в Telegram или заполните форму — отвечаю быстро, обсудим детали и запустимся.</p>
+
+  <div class="contact-btns reveal">
+    <a href="https://t.me/waythewear" target="_blank" class="btn-mag btn-tg" style="padding:16px 40px;font-size:13px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       Написать в Telegram
     </a>
-    <a class="discord-button" href="https://discord.gg/hreWxk9u" target="_blank" rel="noopener">
-      <span class="dc-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-      </span>
-      Зайти на Discord
-    </a>
+    <a href="mailto:retyaga0@gmail.com" class="btn-mag btn-ghost" style="padding:16px 40px;font-size:13px">retyaga0@gmail.com</a>
   </div>
-  <div style="margin-top:40px;display:flex;justify-content:center;gap:40px;flex-wrap:wrap" class="reveal">
-    <div style="text-align:center">
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Telegram</div>
-      <a href="https://t.me/waythewear" style="color:var(--teal);font-size:14px;font-family:'Space Mono',monospace;text-decoration:none">@waythewear</a>
+
+  <!-- CONTACT FORM -->
+  <div class="contact-form-wrap reveal">
+    <div class="form-header">// оставить заявку — мы скопируем и отправим в Telegram</div>
+    <div class="form-body">
+      <div class="form-group">
+        <label class="form-label">Ваше имя</label>
+        <input class="form-input" id="f-name" type="text" placeholder="Иван / Ivan" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telegram / Email</label>
+        <input class="form-input" id="f-contact" type="text" placeholder="@username или email" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Опишите проект</label>
+        <textarea class="form-textarea" id="f-msg" placeholder="Что хотите построить? Какой стек, сроки, бюджет?"></textarea>
+      </div>
+      <button class="form-submit" onclick="submitForm()">Отправить заявку</button>
+      <div class="tg-redirect" id="tg-redirect">
+        Ваша заявка скопирована в буфер обмена.<br>
+        <a href="https://t.me/waythewearowner" target="_blank">Нажмите сюда, чтобы открыть Telegram и вставить сообщение</a><br>
+        <span style="color:var(--muted);font-size:9px;margin-top:6px;display:block">@waythewearowner — рабочий аккаунт для заявок</span>
+      </div>
     </div>
-    <div style="text-align:center">
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Discord</div>
-      <a href="https://discord.gg/hreWxk9u" style="color:var(--discord);font-size:14px;font-family:'Space Mono',monospace;text-decoration:none">discord.gg/hreWxk9u</a>
+  </div>
+
+  <div class="contact-channels reveal" style="margin-top:50px">
+    <div class="ch-item">
+      <div class="ch-lbl">Telegram</div>
+      <a class="ch-val" href="https://t.me/waythewear" target="_blank">@waythewear</a>
     </div>
-    <div style="text-align:center">
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Статус</div>
-      <span style="color:var(--teal);font-size:14px;font-family:'Space Mono',monospace">● Доступен</span>
+    <div class="ch-item">
+      <div class="ch-lbl">Email</div>
+      <a class="ch-val" href="mailto:retyaga0@gmail.com">retyaga0@gmail.com</a>
     </div>
-    <div style="text-align:center">
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">Часовой пояс</div>
-      <span style="color:var(--muted);font-size:14px;font-family:'Space Mono',monospace">UTC+3</span>
+    <div class="ch-item">
+      <div class="ch-lbl">Discord</div>
+      <a class="ch-val" href="https://discord.gg/hreWxk9u" target="_blank">discord.gg/hreWxk9u</a>
+    </div>
+    <div class="ch-item">
+      <div class="ch-lbl">Статус</div>
+      <span class="ch-val" style="color:var(--green)">● Доступен</span>
+    </div>
+    <div class="ch-item">
+      <div class="ch-lbl">Часовой пояс</div>
+      <span class="ch-val" style="color:var(--muted)">UTC+3</span>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">waythewear · full-stack developer</div>
-  <div class="footer-links">
-    <a class="footer-link" href="https://t.me/waythewear" target="_blank">Telegram</a>
-    <a class="footer-link" href="https://discord.gg/hreWxk9u" target="_blank">Discord</a>
+<!-- ── FOOTER ── -->
+<footer style="margin-bottom:42px">
+  <div class="foot-logo">waythewear · full-stack dev</div>
+  <div class="foot-links">
+    <a class="foot-link" href="https://t.me/waythewear" target="_blank">Telegram</a>
+    <a class="foot-link" href="https://discord.gg/hreWxk9u" target="_blank">Discord</a>
+    <a class="foot-link" href="mailto:retyaga0@gmail.com">Email</a>
   </div>
-  <div class="footer-copy">© 2025 — все права защищены</div>
+  <div class="foot-copy">© 2025 waythewear</div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-  // ── CURSOR ──────────────────────────────────────────
-  const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-  });
+// ── CURSOR ──
+const dot = document.getElementById('cur-dot');
+const ring = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)})();
+document.querySelectorAll('a,button,.btn-mag,.faq-q,.c-opt,.tech-chip,.proj-card,.serv-card,.rev-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
 
-  // ── SCROLL REVEAL ────────────────────────────────────
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 80);
-      }
-    });
-  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-  reveals.forEach(el => observer.observe(el));
+// ── THREE.JS ──
+(function(){
+  const canvas=document.getElementById('three-canvas');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+  renderer.setSize(window.innerWidth,window.innerHeight);
 
-  // ── PARTICLES ────────────────────────────────────────
-  (function() {
-    const canvas = document.getElementById('particles-canvas');
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [], mouse = { x: -9999, y: -9999 };
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(70,window.innerWidth/window.innerHeight,.1,2000);
+  camera.position.z=700;
 
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  // Code characters for particles
+  const chars='{}[]()<>=/\\;:,.\'"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*+-'.split('');
 
-    const COLORS = ['rgba(88,101,242,', 'rgba(127,119,221,', 'rgba(29,158,117,'];
-
-    class Particle {
-      constructor() { this.reset(); }
-      reset() {
-        this.x = Math.random() * W;
-        this.y = Math.random() * H;
-        this.r = Math.random() * 1.8 + 0.4;
-        this.vx = (Math.random() - 0.5) * 0.35;
-        this.vy = (Math.random() - 0.5) * 0.35;
-        this.alpha = Math.random() * 0.5 + 0.1;
-        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-        this.life = 0;
-        this.maxLife = 200 + Math.random() * 400;
-      }
-      update() {
-        this.life++;
-        if (this.life > this.maxLife) { this.reset(); return; }
-        // mouse repulsion
-        const dx = this.x - mouse.x, dy = this.y - mouse.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 120) {
-          const force = (120 - dist) / 120 * 0.8;
-          this.vx += (dx / dist) * force;
-          this.vy += (dy / dist) * force;
-        }
-        this.vx *= 0.98; this.vy *= 0.98;
-        this.x += this.vx; this.y += this.vy;
-        if (this.x < 0) this.x = W; if (this.x > W) this.x = 0;
-        if (this.y < 0) this.y = H; if (this.y > H) this.y = 0;
-      }
-      draw() {
-        const fade = Math.min(1, Math.min(this.life, this.maxLife - this.life) / 40);
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.fillStyle = this.color + (this.alpha * fade) + ')';
-        ctx.fill();
-      }
-    }
-
-    // connections
-    function drawConnections() {
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const d = Math.sqrt(dx*dx + dy*dy);
-          if (d < 100) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(88,101,242,${(1 - d/100) * 0.08})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    for (let i = 0; i < 90; i++) particles.push(new Particle());
-
-    function loop() {
-      ctx.clearRect(0, 0, W, H);
-      drawConnections();
-      particles.forEach(p => { p.update(); p.draw(); });
-      requestAnimationFrame(loop);
-    }
-    loop();
-  })();
-
-  // ── TERMINAL ─────────────────────────────────────────
-  (function() {
-    const lines = [
-      { cmd: 'whoami', out: ['waythewear — full-stack developer'], type: 'out' },
-      { cmd: 'ls ./skills', out: ['Discord.js  Node.js  React  PostgreSQL  Docker  Redis'], type: 'out' },
-      { cmd: 'git log --oneline -3', out: [
-        'a7f2c1d feat: добавил антифлуд в FloodShield',
-        '3bc90ef fix: оптимизация экономики EcoVault',
-        'e1d4a8b init: GuardCore moderation system'
-      ], type: 'out' },
-      { cmd: 'uptime', out: ['3.5 лет в разработке, 47+ проектов сдано'], type: 'out' },
-      { cmd: 'echo $STATUS', out: ['● доступен для новых проектов'], type: 'out' },
-    ];
-
-    const typingEl = document.getElementById('t-typing');
-    const outputEl = document.getElementById('t-output');
-    const cursorEl = document.getElementById('t-cursor');
-    let lineIdx = 0;
-
-    function typeCmd(cmd, cb) {
-      let i = 0;
-      typingEl.textContent = '';
-      cursorEl.style.display = 'inline-block';
-      const iv = setInterval(() => {
-        typingEl.textContent += cmd[i++];
-        if (i >= cmd.length) { clearInterval(iv); setTimeout(cb, 400); }
-      }, 55);
-    }
-
-    function showOutput(outs, type, cb) {
-      cursorEl.style.display = 'none';
-      outs.forEach((o, i) => {
-        setTimeout(() => {
-          const div = document.createElement('div');
-          div.className = 't-out';
-          div.textContent = o;
-          outputEl.appendChild(div);
-          if (i === outs.length - 1) setTimeout(cb, 500);
-        }, i * 120);
-      });
-    }
-
-    function addPromptLine() {
-      const wrap = document.createElement('div');
-      wrap.className = 't-line';
-      const prompt = document.createElement('span');
-      prompt.className = 't-prompt'; prompt.textContent = '❯';
-      wrap.appendChild(prompt);
-      wrap.appendChild(typingEl);
-      wrap.appendChild(cursorEl);
-      outputEl.appendChild(wrap);
-    }
-
-    function runNext() {
-      if (lineIdx >= lines.length) {
-        lineIdx = 0;
-        setTimeout(() => {
-          outputEl.innerHTML = '';
-          addPromptLine();
-          runNext();
-        }, 2000);
-        return;
-      }
-      const line = lines[lineIdx++];
-      typeCmd(line.cmd, () => {
-        showOutput(line.out, line.type, () => {
-          addPromptLine();
-          setTimeout(runNext, 300);
-        });
-      });
-    }
-
-    addPromptLine();
-    setTimeout(runNext, 800);
-  })();
-
-  // ── FAQ ──────────────────────────────────────────────
-  function toggleFaq(el) {
-    const item = el.parentElement;
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
-
-  // ── CALCULATOR ───────────────────────────────────────
-  const daysMap = {
-    '50':  { '1':'1–3 дня', '1.8':'3–7 дней', '3':'1–2 недели' },
-    '80':  { '1':'2–5 дней', '1.8':'1–2 недели', '3':'2–3 недели' },
-    '150': { '1':'1–2 недели', '1.8':'2–3 недели', '3':'3–5 недель' },
-    '200': { '1':'2–3 недели', '1.8':'3–5 недель', '3':'5–8 недель' },
+  // Create canvas texture for each particle group
+  const makeTexture=(char)=>{
+    const c=document.createElement('canvas');
+    c.width=32;c.height=32;
+    const ctx=c.getContext('2d');
+    ctx.fillStyle='rgba(0,0,0,0)';
+    ctx.fillRect(0,0,32,32);
+    ctx.fillStyle='rgba(255,255,255,1)';
+    ctx.font='bold 20px monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(char,16,16);
+    const tex=new THREE.CanvasTexture(c);
+    return tex;
   };
 
-  function pick(el, groupId) {
-    document.querySelectorAll('#' + groupId + ' .calc-opt').forEach(o => o.classList.remove('active'));
-    el.classList.add('active');
-    updateCalc();
+  // Shared materials for performance
+  const colors=[0x5865F2,0x7C3AED,0x10B981,0xF59E0B,0xEC4899,0x818CF8];
+  const NUM=1800;
+  const positions=new Float32Array(NUM*3);
+  const velocities=[];
+  const colorsArr=new Float32Array(NUM*3);
+  const sizes=new Float32Array(NUM);
+
+  for(let i=0;i<NUM;i++){
+    const angle=Math.random()*Math.PI*2;
+    const radius=Math.random()*600+100;
+    positions[i*3]=Math.cos(angle)*radius*(Math.random()*.5+.75);
+    positions[i*3+1]=(Math.random()-.5)*800;
+    positions[i*3+2]=(Math.random()-.5)*400;
+
+    velocities.push({
+      x:(Math.random()-.5)*.4,
+      y:(Math.random()-.5)*.3,
+      z:(Math.random()-.5)*.2,
+      life:Math.random()*300+200,
+      age:Math.random()*500
+    });
+
+    const col=new THREE.Color(colors[Math.floor(Math.random()*colors.length)]);
+    colorsArr[i*3]=col.r;
+    colorsArr[i*3+1]=col.g;
+    colorsArr[i*3+2]=col.b;
+    sizes[i]=Math.random()*10+4;
   }
 
-  function pickMulti(el) {
-    el.classList.toggle('active');
-    updateCalc();
-  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(positions,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(colorsArr,3));
+  geo.setAttribute('size',new THREE.BufferAttribute(sizes,1));
 
-  function updateCalc() {
-    const typeEl = document.querySelector('#calc-type .calc-opt.active');
-    const complexEl = document.querySelector('#calc-complexity .calc-opt.active');
-    const deadlineEl = document.querySelector('#calc-deadline .calc-opt.active');
-    const extras = [...document.querySelectorAll('#calc-extras .calc-opt.active')];
+  // Make a dot texture
+  const dotTex=(()=>{
+    const c=document.createElement('canvas');
+    c.width=64;c.height=64;
+    const ctx=c.getContext('2d');
+    const g=ctx.createRadialGradient(32,32,0,32,32,32);
+    g.addColorStop(0,'rgba(255,255,255,1)');
+    g.addColorStop(.3,'rgba(255,255,255,.8)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;
+    ctx.fillRect(0,0,64,64);
+    return new THREE.CanvasTexture(c);
+  })();
 
-    const base = parseFloat(typeEl?.dataset.val || 50);
-    const complex = parseFloat(complexEl?.dataset.val || 1);
-    const dead = parseFloat(deadlineEl?.dataset.val || 1);
-    const extraSum = extras.reduce((s, e) => s + parseFloat(e.dataset.val), 0);
-
-    const total = Math.round(base * complex * dead + extraSum);
-    const priceEl = document.getElementById('calc-price');
-    const daysEl = document.getElementById('calc-days');
-
-    priceEl.textContent = '$' + total;
-    const typeKey = typeEl?.dataset.val || '50';
-    const complexKey = complexEl?.dataset.val || '1';
-    daysEl.textContent = '≈ ' + (daysMap[typeKey]?.[complexKey] || 'обсуждаем');
-  }
-
-  // ── EASTER EGG — KONAMI CODE ─────────────────────────
-  const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-  let konamiIdx = 0;
-  document.addEventListener('keydown', e => {
-    if (e.key === KONAMI[konamiIdx]) {
-      konamiIdx++;
-      if (konamiIdx === KONAMI.length) {
-        document.getElementById('easter-egg').classList.add('active');
-        konamiIdx = 0;
-      }
-    } else { konamiIdx = 0; }
+  const mat=new THREE.PointsMaterial({
+    size:8,sizeAttenuation:true,
+    vertexColors:true,
+    map:dotTex,
+    transparent:true,
+    opacity:.7,
+    blending:THREE.AdditiveBlending,
+    depthWrite:false
   });
-  function closeEgg() {
-    document.getElementById('easter-egg').classList.remove('active');
+
+  const points=new THREE.Points(geo,mat);
+  scene.add(points);
+
+  // Orbital rings
+  const ringGeo1=new THREE.RingGeometry(220,222,128);
+  const ringMat1=new THREE.MeshBasicMaterial({color:0x5865F2,side:THREE.DoubleSide,transparent:true,opacity:.15});
+  const ring1=new THREE.Mesh(ringGeo1,ringMat1);
+  ring1.rotation.x=Math.PI/3;
+  scene.add(ring1);
+
+  const ringGeo2=new THREE.RingGeometry(300,302,128);
+  const ringMat2=new THREE.MeshBasicMaterial({color:0x7C3AED,side:THREE.DoubleSide,transparent:true,opacity:.1});
+  const ring2=new THREE.Mesh(ringGeo2,ringMat2);
+  ring2.rotation.x=Math.PI/6;
+  ring2.rotation.y=Math.PI/4;
+  scene.add(ring2);
+
+  // Wireframe sphere
+  const sphereGeo=new THREE.IcosahedronGeometry(160,3);
+  const wireframe=new THREE.WireframeGeometry(sphereGeo);
+  const lineMat=new THREE.LineBasicMaterial({color:0x5865F2,transparent:true,opacity:.06});
+  const sphere=new THREE.LineSegments(wireframe,lineMat);
+  scene.add(sphere);
+
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
+
+  let mouseX=0,mouseY=0;
+  document.addEventListener('mousemove',e=>{
+    mouseX=(e.clientX/window.innerWidth-.5)*2;
+    mouseY=(e.clientY/window.innerHeight-.5)*2;
+  });
+
+  let scrollY=0;
+  window.addEventListener('scroll',()=>{scrollY=window.scrollY});
+
+  let frame=0;
+  function animate(){
+    requestAnimationFrame(animate);
+    frame++;
+
+    // Update particles
+    const pos=geo.attributes.position.array;
+    for(let i=0;i<NUM;i++){
+      const v=velocities[i];
+      v.age++;
+      if(v.age>v.life){
+        // Reset to burst from center-ish
+        const a=Math.random()*Math.PI*2;
+        const r=Math.random()*50;
+        pos[i*3]=Math.cos(a)*r;
+        pos[i*3+1]=(Math.random()-.5)*100;
+        pos[i*3+2]=(Math.random()-.5)*50;
+        v.x=(Math.random()-.5)*2;
+        v.y=(Math.random()-.5)*1.5;
+        v.z=(Math.random()-.5);
+        v.age=0;v.life=200+Math.random()*400;
+      }
+      pos[i*3]+=v.x;
+      pos[i*3+1]+=v.y;
+      pos[i*3+2]+=v.z;
+      v.x*=.995;v.y*=.995;v.z*=.995;
+    }
+    geo.attributes.position.needsUpdate=true;
+
+    // Camera parallax
+    camera.position.x+=(mouseX*80-camera.position.x)*.03;
+    camera.position.y+=(-mouseY*60-camera.position.y)*.03;
+    camera.position.z=700-scrollY*.3;
+    camera.lookAt(0,0,0);
+
+    // Rotate rings and sphere
+    ring1.rotation.z+=.003;
+    ring2.rotation.z-=.002;
+    ring2.rotation.x+=.001;
+    sphere.rotation.y+=.002;
+    sphere.rotation.x+=.001;
+    points.rotation.y+=.0008;
+
+    renderer.render(scene,camera);
   }
+  animate();
+
+  // Initial explosion burst
+  const pos2=geo.attributes.position.array;
+  for(let i=0;i<NUM;i++){
+    pos2[i*3]=0;pos2[i*3+1]=0;pos2[i*3+2]=0;
+    const a=Math.random()*Math.PI*2;
+    const b=Math.random()*Math.PI;
+    const speed=Math.random()*8+2;
+    velocities[i].x=Math.sin(b)*Math.cos(a)*speed;
+    velocities[i].y=Math.sin(b)*Math.sin(a)*speed;
+    velocities[i].z=Math.cos(b)*speed*.5;
+  }
+  geo.attributes.position.needsUpdate=true;
+})();
+
+// ── SCROLL REVEAL ──
+const reveals=document.querySelectorAll('.reveal');
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting) setTimeout(()=>e.target.classList.add('vis'),i*70);
+  });
+},{threshold:.07,rootMargin:'0px 0px -30px 0px'});
+reveals.forEach(el=>io.observe(el));
+
+// ── ANIMATED COUNTERS ──
+function animCount(){
+  document.querySelectorAll('.stat-val[data-target]').forEach(el=>{
+    const target=parseInt(el.dataset.target);
+    const suffix=el.dataset.suffix||'';
+    const prefix=el.dataset.prefix||'';
+    let current=0;
+    const step=target/60;
+    const iv=setInterval(()=>{
+      current+=step;
+      if(current>=target){current=target;clearInterval(iv)}
+      el.textContent=prefix+Math.floor(current)+suffix;
+    },24);
+  });
+}
+const statsRow=document.getElementById('stats-row');
+const statsIo=new IntersectionObserver((entries)=>{
+  if(entries[0].isIntersecting){animCount();statsIo.disconnect()}
+},{threshold:.3});
+statsIo.observe(statsRow);
+
+// ── MAGNETIC BUTTONS ──
+document.querySelectorAll('.btn-mag').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    const x=e.clientX-r.left-r.width/2;
+    const y=e.clientY-r.top-r.height/2;
+    btn.style.transform=`translate(${x*.18}px,${y*.18}px)`;
+  });
+  btn.addEventListener('mouseleave',()=>{
+    btn.style.transform='';
+  });
+});
+
+// ── FAQ ──
+function toggleFaq(el){
+  const item=el.parentElement;
+  const open=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+  if(!open) item.classList.add('open');
+}
+
+// ── CALCULATOR ──
+const daysMap={
+  '50':{'1':'1–3 дня','1.8':'3–7 дней','3':'1–2 недели'},
+  '80':{'1':'2–5 дней','1.8':'1–2 недели','3':'2–3 недели'},
+  '150':{'1':'1–2 недели','1.8':'2–3 недели','3':'3–5 недель'},
+  '200':{'1':'2–3 недели','1.8':'3–5 недель','3':'5–8 недель'}
+};
+function pick(el,gId){
+  document.querySelectorAll('#'+gId+' .c-opt').forEach(o=>o.classList.remove('on'));
+  el.classList.add('on');updateCalc();
+}
+function updateCalc(){
+  const t=document.querySelector('#co-type .c-opt.on');
+  const c=document.querySelector('#co-cplx .c-opt.on');
+  const d=document.querySelector('#co-dead .c-opt.on');
+  const extras=[...document.querySelectorAll('#co-extra .c-opt.on')];
+  const base=parseFloat(t?.dataset.val||50);
+  const cplx=parseFloat(c?.dataset.val||1);
+  const dead=parseFloat(d?.dataset.val||1);
+  const ext=extras.reduce((s,e)=>s+parseFloat(e.dataset.val),0);
+  const total=Math.round(base*cplx*dead+ext);
+  document.getElementById('calc-price').textContent='$'+total;
+  const dk=t?.dataset.val||'50';
+  const ck=c?.dataset.val||'1';
+  document.getElementById('calc-days').textContent='≈ '+(daysMap[dk]?.[ck]||'обсуждаем');
+}
+updateCalc();
+
+// ── CONTACT FORM → TELEGRAM REDIRECT ──
+function submitForm(){
+  const name=document.getElementById('f-name').value.trim();
+  const contact=document.getElementById('f-contact').value.trim();
+  const msg=document.getElementById('f-msg').value.trim();
+  if(!name||!msg){alert('Заполните имя и описание проекта.');return;}
+  const text=`[waythewear.dev] Новая заявка\n\nИмя: ${name}\nКонтакт: ${contact||'не указан'}\n\nПроект:\n${msg}`;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).catch(()=>{});
+  }
+  const el=document.getElementById('tg-redirect');
+  el.style.display='block';
+  setTimeout(()=>window.open('https://t.me/waythewearowner','_blank'),800);
+}
+
+// ── KONAMI CODE ──
+const K=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let ki=0;
+document.addEventListener('keydown',e=>{
+  if(e.key===K[ki]){ki++;if(ki===K.length){document.getElementById('egg').classList.add('on');ki=0}}
+  else ki=0;
+});
+
+// ── SMOOTH NAV SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
+  });
+});
+
+// ── NAV SCROLL STYLE ──
+window.addEventListener('scroll',()=>{
+  const nav=document.getElementById('nav');
+  if(window.scrollY>60) nav.style.background='rgba(6,7,16,0.95)';
+  else nav.style.background='rgba(6,7,16,0.7)';
+});
 </script>
 </body>
 </html>
